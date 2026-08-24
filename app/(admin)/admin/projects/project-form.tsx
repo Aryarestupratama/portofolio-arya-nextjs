@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,6 +61,22 @@ export function ProjectForm({
     action,
     null,
   );
+
+  // Skills dikontrol manual via state, lalu di-submit lewat hidden input
+  // native (bukan mengandalkan bubble-input Radix Checkbox). Radix Checkbox
+  // pakai <button role="checkbox"> + hidden input bayangan untuk ikut serta
+  // di native form, dan sinkronisasinya tidak reliable untuk grup checkbox
+  // dengan `name` yang sama (skill_ids) — centang baru sering tidak ikut
+  // ke FormData saat submit. Jadi di sini Checkbox murni jadi UI visual.
+  const [selectedSkills, setSelectedSkills] = useState<number[]>(
+    defaults?.selectedSkillIds ?? [],
+  );
+
+  function toggleSkill(id: number, checked: boolean) {
+    setSelectedSkills((prev) =>
+      checked ? [...prev, id] : prev.filter((sid) => sid !== id),
+    );
+  }
 
   const metricsDefault = (defaults?.metrics ?? [])
     .map((m) => `${m.label}|${m.value}`)
@@ -284,9 +300,10 @@ export function ProjectForm({
                   className="flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-sm text-ink"
                 >
                   <Checkbox
-                    name="skill_ids"
-                    value={String(skill.id)}
-                    defaultChecked={defaults?.selectedSkillIds?.includes(skill.id)}
+                    checked={selectedSkills.includes(skill.id)}
+                    onCheckedChange={(checked) =>
+                      toggleSkill(skill.id, checked === true)
+                    }
                   />
                   {skill.name}
                 </label>
@@ -299,6 +316,13 @@ export function ProjectForm({
             Belum ada skill. Tambahkan dulu di halaman Skills.
           </p>
         )}
+
+        {/* Native hidden inputs — ini yang benar-benar dibaca lewat
+            formData.getAll("skill_ids") di server action, bukan bubble
+            -input Radix yang tidak reliable untuk grup checkbox. */}
+        {selectedSkills.map((id) => (
+          <input key={id} type="hidden" name="skill_ids" value={id} />
+        ))}
       </section>
 
       {state?.error && (
