@@ -4,7 +4,7 @@ import type { CertificateInput } from "@/lib/validations/certificates";
 function normalize(data: CertificateInput) {
   return {
     ...data,
-    year_end: data.year_end === "" || data.year_end === undefined ? null : data.year_end,
+    year_end: data.year_end === undefined ? null : data.year_end,
   };
 }
 
