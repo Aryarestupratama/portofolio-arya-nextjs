@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getPublicImageUrl } from "@/lib/supabase/storage";
+import { getPublicImageUrl, getCertificateUrl } from "@/lib/supabase/storage";
 import { getProfile } from "@/lib/supabase/queries/profile";
 import { toDirectImageUrl } from "@/lib/utils/gdrive";
 import {
@@ -49,6 +49,12 @@ export default async function HomePage() {
       (ps: { skills: { name: string } }) => ps.skills.name,
     ),
   }));
+
+  const certificatesWithUrls = certificates.map((cert) => ({
+    ...cert,
+    certificate_url: getCertificateUrl(supabase, cert.certificate_url),
+  }));
+
 
   const skillsByCategory = skills.reduce<Record<string, typeof skills>>(
     (acc, skill) => {
@@ -292,7 +298,7 @@ export default async function HomePage() {
           </FadeIn>
 
           <div className="mt-8">
-            <CertificatePreview certificates={certificates} />
+            <CertificatePreview certificates={certificatesWithUrls} />
           </div>
         </Container>
       </section>

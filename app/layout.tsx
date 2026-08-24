@@ -32,7 +32,7 @@ export default function RootLayout({
       lang="id" 
       className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="antialiased font-sans">
+      <body className="antialiased font-sans" suppressHydrationWarning>
         {children}
       </body>
     </html>

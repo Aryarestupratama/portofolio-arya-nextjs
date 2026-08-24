@@ -17,6 +17,11 @@ function displayYear(cert: Certificate) {
   return cert.year_end ? `${cert.year_start}–${cert.year_end}` : `${cert.year_start}`;
 }
 
+function previewUrl(url: string) {
+  // Sembunyikan toolbar & sidebar thumbnail bawaan browser, fit ke lebar iframe
+  return `${url}#toolbar=0&navpanes=0&view=FitH`;
+}
+
 // Design.md / Home.jsx (Laravel): list certificate di kiri, klik salah satu
 // -> iframe preview certificate langsung tampil di kanan (tanpa pindah
 // halaman). Port dari section Certificates di Home lama.
@@ -30,7 +35,7 @@ export function CertificatePreview({
   );
 
   if (certificates.length === 0) {
-    return <EmptyState message="Belum ada sertifikat ditambahkan." />;
+    return <EmptyState message="No certificates added yet." />;
   }
 
   return (
@@ -69,7 +74,7 @@ export function CertificatePreview({
           <>
             <iframe
               key={selected.id}
-              src={selected.certificate_url}
+              src={previewUrl(selected.certificate_url)}
               title={`Preview ${selected.title}`}
               className="min-h-[280px] w-full flex-1"
             />

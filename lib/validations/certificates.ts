@@ -11,7 +11,8 @@ export const certificateSchema = z
     issuer: z.string().min(1, "Issuer wajib diisi").max(150),
     year_start: z.coerce.number().int().min(1990).max(2100),
     year_end: yearEndSchema,
-    certificate_url: z.string().url("URL tidak valid"),
+    // Sekarang path file di storage bucket "certificates", bukan URL Drive.
+    certificate_url: z.string().min(1, "Sertifikat wajib diupload"),
   })
   .refine(
     (data) => data.year_end === undefined || data.year_end >= data.year_start,

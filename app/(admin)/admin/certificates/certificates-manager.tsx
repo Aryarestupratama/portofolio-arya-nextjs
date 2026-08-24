@@ -25,14 +25,15 @@ type Certificate = {
   issuer: string;
   year_start: number;
   year_end: number | null;
-  certificate_url: string;
+  certificate_url: string; // path di storage
+  certificate_display_url?: string; // public URL, buat link preview
 };
 
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending}>
-      {pending ? "Menyimpan..." : "Simpan"}
+      {pending ? "Saving..." : "Save"}
     </Button>
   );
 }
@@ -61,7 +62,7 @@ function CertificateFormDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {certificate ? "Edit Certificate" : "Tambah Certificate"}
+            {certificate ? "Edit Certificate" : "Add Certificate"}
           </DialogTitle>
         </DialogHeader>
         <form
@@ -69,13 +70,19 @@ function CertificateFormDialog({
             setSubmitted(true);
             formAction(fd);
           }}
+          encType="multipart/form-data"
           className="space-y-4"
         >
           {certificate && (
             <input type="hidden" name="id" value={certificate.id} />
           )}
+          <input
+            type="hidden"
+            name="existing_certificate_url"
+            value={certificate?.certificate_url ?? ""}
+          />
           <div className="space-y-1.5">
-            <Label htmlFor="title">Judul</Label>
+            <Label htmlFor="title">Title</Label>
             <Input id="title" name="title" defaultValue={certificate?.title} required />
           </div>
           <div className="space-y-1.5">
@@ -84,7 +91,7 @@ function CertificateFormDialog({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="year_start">Tahun mulai</Label>
+              <Label htmlFor="year_start">Start year</Label>
               <Input
                 id="year_start"
                 name="year_start"
@@ -94,7 +101,7 @@ function CertificateFormDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="year_end">Tahun selesai (opsional)</Label>
+              <Label htmlFor="year_end">End year (optional)</Label>
               <Input
                 id="year_end"
                 name="year_end"
@@ -104,15 +111,28 @@ function CertificateFormDialog({
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="certificate_url">Link bukti sertifikat</Label>
+            <Label htmlFor="certificate_file">Certificate file</Label>
             <Input
-              id="certificate_url"
-              name="certificate_url"
-              type="url"
-              placeholder="https://..."
-              defaultValue={certificate?.certificate_url}
-              required
+              id="certificate_file"
+              name="certificate_file"
+              type="file"
+              accept=".pdf,image/jpeg,image/png,image/webp"
+              required={!certificate}
             />
+            {certificate?.certificate_display_url && (
+              <a
+                href={certificate.certificate_display_url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-block font-mono text-xs text-[var(--cobalt)] hover:underline"
+              >
+                View current file
+              </a>
+            )}
+            <p className="text-xs text-ink-soft">
+              {certificate ? "Leave empty to keep the current file. " : ""}
+              PDF, JPG, PNG, or WebP — max 10MB.
+            </p>
           </div>
           {state?.error && (
             <p className="text-sm text-red-600" role="alert">
@@ -134,24 +154,24 @@ export function CertificatesManager({
   return (
     <div className="mt-6">
       <div className="flex justify-end">
-        <CertificateFormDialog trigger={<Button>+ Tambah Certificate</Button>} />
+        <CertificateFormDialog trigger={<Button>+ Add Certificate</Button>} />
       </div>
 
       <div className="mt-4 overflow-hidden rounded-xl border border-line">
         <table className="w-full text-sm">
           <thead className="bg-clean-white text-left text-ink-soft">
             <tr>
-              <th className="px-4 py-2 font-medium">Judul</th>
+              <th className="px-4 py-2 font-medium">Title</th>
               <th className="px-4 py-2 font-medium">Issuer</th>
-              <th className="px-4 py-2 font-medium">Tahun</th>
-              <th className="px-4 py-2 font-medium text-right">Aksi</th>
+              <th className="px-4 py-2 font-medium">Year</th>
+              <th className="px-4 py-2 font-medium text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {certificates.length === 0 && (
               <tr>
                 <td colSpan={4} className="px-4 py-8 text-center text-ink-soft">
-                  Belum ada sertifikat.
+                  No certificates yet.
                 </td>
               </tr>
             )}
@@ -174,12 +194,12 @@ export function CertificatesManager({
                       }
                     />
                     <ConfirmDeleteDialog
-                      title="Hapus sertifikat?"
-                      description={`Sertifikat "${cert.title}" akan dihapus permanen.`}
+                      title="Delete this certificate?"
+                      description={`"${cert.title}" will be permanently deleted.`}
                       onConfirm={() => deleteCertificateAction(cert.id)}
                       trigger={
                         <Button variant="destructive" size="sm">
-                          Hapus
+                          Delete
                         </Button>
                       }
                     />
