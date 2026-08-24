@@ -18,13 +18,9 @@ function displayYear(cert: Certificate) {
 }
 
 function previewUrl(url: string) {
-  // Sembunyikan toolbar & sidebar thumbnail bawaan browser, fit ke lebar iframe
   return `${url}#toolbar=0&navpanes=0&view=FitH`;
 }
 
-// Design.md / Home.jsx (Laravel): list certificate di kiri, klik salah satu
-// -> iframe preview certificate langsung tampil di kanan (tanpa pindah
-// halaman). Port dari section Certificates di Home lama.
 export function CertificatePreview({
   certificates,
 }: {
@@ -40,7 +36,8 @@ export function CertificatePreview({
 
   return (
     <div className="grid items-start gap-10 md:grid-cols-[1fr_1.3fr]">
-      <div className="flex flex-col gap-2">
+      {/* List certificate — scrollable, tinggi mengikuti panel preview */}
+      <div className="flex max-h-[420px] flex-col gap-2 overflow-y-auto pr-1 md:max-h-[520px]">
         {certificates.map((cert) => {
           const active = selected?.id === cert.id;
           return (
@@ -57,7 +54,7 @@ export function CertificatePreview({
                 className="mt-0.5 shrink-0 text-[var(--cobalt)]"
               />
               <div className="min-w-0">
-                <span className="block truncate text-sm font-medium text-ink">
+                <span className="block text-sm font-medium leading-snug text-ink line-clamp-2">
                   {cert.title}
                 </span>
                 <span className="mt-0.5 block font-mono text-xs text-ink-soft">
