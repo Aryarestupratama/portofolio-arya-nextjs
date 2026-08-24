@@ -84,6 +84,7 @@ export function ProfileForm({ defaultValues }: { defaultValues: ProfileRow }) {
         <Field name="name" label="Nama" />
         <Field name="tagline" label="Tagline (di bawah nama)" />
         <Field name="role" label="Role (contoh: Web Developer)" />
+        <Field name="hero_photo_url" label="Link foto hero (Google Drive)" />
       </section>
 
       <section className="space-y-4">

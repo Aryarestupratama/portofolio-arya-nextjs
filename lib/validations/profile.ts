@@ -6,6 +6,11 @@ export const profileSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi").max(150),
   tagline: z.string().max(255).optional().or(z.literal("")),
   role: z.string().max(100).optional().or(z.literal("")),
+  hero_photo_url: z
+    .string()
+    .url("Harus berupa link valid")
+    .optional()
+    .or(z.literal("")),
   about_bio: z.string().optional().or(z.literal("")),
   about_photo_url: z
     .string()

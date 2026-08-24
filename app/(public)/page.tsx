@@ -59,33 +59,57 @@ export default async function HomePage() {
 
   const recentExperiences = experiences.slice(0, 2);
   const aboutPhotoUrl = toDirectImageUrl(profile.about_photo_url);
+  const heroPhotoUrl = toDirectImageUrl(profile.hero_photo_url);
 
   return (
     <>
       {/* ---------- Hero ---------- */}
       <section id="top" className="border-b border-line py-20 md:py-28">
         <Container>
-          <FadeIn>
-            <p className="font-mono text-xs text-ink-soft">hi, i&rsquo;m</p>
-            <h1 className="mt-2 font-display text-[2rem] font-medium tracking-tight text-ink md:text-5xl">
-              {profile.name}
-            </h1>
-            {profile.tagline && (
-              <p className="mt-4 max-w-xl text-ink-soft">{profile.tagline}</p>
-            )}
-            <div className="mt-8 flex gap-3">
-              <Link href="/projects">
-                <Button className="rounded-full">Lihat Projects</Button>
-              </Link>
-              {profile.cv_url && (
-                <a href={profile.cv_url} target="_blank" rel="noreferrer">
-                  <Button variant="outline" className="rounded-full">
-                    Download CV
-                  </Button>
-                </a>
+          <div className="grid items-center gap-10 md:grid-cols-[1.3fr_1fr]">
+            <FadeIn>
+              <p className="font-mono text-xs text-ink-soft">hi, i&rsquo;m</p>
+              <h1 className="mt-2 font-display text-[2rem] font-medium tracking-tight text-ink md:text-5xl">
+                {profile.name}
+              </h1>
+              {profile.tagline && (
+                <p className="mt-4 max-w-xl text-ink-soft">{profile.tagline}</p>
               )}
-            </div>
-          </FadeIn>
+              <div className="mt-8 flex gap-3">
+                <Link href="/projects">
+                  <Button className="rounded-full">Lihat Projects</Button>
+                </Link>
+                {profile.cv_url && (
+                  <a href={profile.cv_url} target="_blank" rel="noreferrer">
+                    <Button variant="outline" className="rounded-full">
+                      Download CV
+                    </Button>
+                  </a>
+                )}
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={0.1}>
+              <div className="flex justify-center md:justify-end">
+                {heroPhotoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={heroPhotoUrl}
+                    alt={profile.name}
+                    width={280}
+                    height={320}
+                    className="h-72 w-64 rounded-2xl border border-line object-cover md:h-80 md:w-72"
+                  />
+                ) : (
+                  <div
+                    className="h-72 w-64 rounded-2xl border border-line bg-clean-white md:h-80 md:w-72"
+                    role="img"
+                    aria-label="Hero photo (placeholder)"
+                  />
+                )}
+              </div>
+            </FadeIn>
+          </div>
         </Container>
       </section>
 
@@ -119,6 +143,15 @@ export default async function HomePage() {
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="mt-6">
+            <Link
+              href="/projects"
+              className="font-mono text-xs text-[var(--cobalt)] hover:underline"
+            >
+              Lihat semua projects →
+            </Link>
           </div>
         </Container>
       </section>
