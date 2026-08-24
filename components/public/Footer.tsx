@@ -1,48 +1,24 @@
-import { GithubIcon, LinkedinIcon, DribbbleIcon } from "./icons";
+import { createClient } from "@/lib/supabase/server";
+import { getProfile } from "@/lib/supabase/queries/profile";
 import { Container } from "./Container";
 
-// Design.md §4.3: satu-satunya section dengan background gelap penuh
-// (bg-ink), teks cream, social icon hover ke cobalt.
-export function Footer() {
+// Section Contact lengkap (headline, email, social icons, CV) sudah ada
+// di Home (app/(public)/page.tsx, id="contact") — Footer sengaja dibuat
+// minimal (cuma copyright) supaya tidak duplikat, karena Footer ini
+// dirender di SEMUA halaman publik lewat layout.
+//
+// Server Component async supaya bisa fetch nama dari tabel `profile`,
+// jadi nggak perlu hardcode manual lagi.
+export async function Footer() {
+  const supabase = await createClient();
+  const profile = await getProfile(supabase);
+
   return (
-    <section className="bg-ink py-16 text-cream">
-      <Container className="flex flex-col items-center gap-6 text-center">
-        <p className="font-mono text-xs text-[var(--butter-cream)]">contact</p>
-        <h2 className="font-display text-2xl font-medium md:text-3xl">
-          Let&rsquo;s work together
-        </h2>
-        <p className="max-w-md text-sm text-cream/70">
-          Terbuka untuk peluang kerja, magang, maupun kolaborasi project.
+    <section className="bg-ink py-8 text-cream">
+      <Container className="flex flex-col items-center gap-1 text-center">
+        <p className="font-mono text-xs text-cream/50">
+          © {new Date().getFullYear()} {profile.name}. All rights reserved.
         </p>
-        <div className="flex gap-5">
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noreferrer"
-            className="text-cream/70 transition-colors hover:text-[var(--cobalt)]"
-            aria-label="GitHub"
-          >
-            <GithubIcon className="h-5 w-5" />
-          </a>
-          <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noreferrer"
-            className="text-cream/70 transition-colors hover:text-[var(--cobalt)]"
-            aria-label="LinkedIn"
-          >
-            <LinkedinIcon className="h-5 w-5" />
-          </a>
-          <a
-            href="https://dribbble.com"
-            target="_blank"
-            rel="noreferrer"
-            className="text-cream/70 transition-colors hover:text-[var(--cobalt)]"
-            aria-label="Dribbble"
-          >
-            <DribbbleIcon className="h-5 w-5" />
-          </a>
-        </div>
       </Container>
     </section>
   );

@@ -10,13 +10,17 @@ import {
   FileText,
   Briefcase,
   ExternalLink,
+  User,
 } from "lucide-react";
 import { LogoutButton } from "@/components/admin/logout-button";
 
 const NAV_GROUPS = [
   { 
     title: "Overview", 
-    items: [{ label: "Dashboard", href: "/admin/dashboard", icon: LayoutGrid }] 
+    items: [
+      { label: "Dashboard", href: "/admin/dashboard", icon: LayoutGrid },
+      { label: "Profile", href: "/admin/profile", icon: User },
+    ] 
   },
   {
     title: "Portfolio",
