@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { formatExperiencePeriod } from "@/lib/validations/experiences";
 
 type Experience = {
   id: number;
   role_title: string;
-  period_text: string;
   description: string;
   achievement: string | null;
+  year_start: number;
+  year_end: number | null;
 };
 
 // Reveal sekali ("one-shot") begitu elemen masuk viewport — konsisten
@@ -41,12 +43,6 @@ function useReveal(threshold = 0.3) {
   return [ref, inView] as const;
 }
 
-// Schema.md tidak punya kolom is_current, jadi deteksi status "ongoing"
-// murni dari regex scan period_text (present/sekarang/now/current).
-function isOngoing(periodText: string) {
-  return /present|sekarang|now|current|saat ini/i.test(periodText);
-}
-
 function RoadmapNode({
   exp,
   index,
@@ -59,7 +55,9 @@ function RoadmapNode({
   align: "left" | "right";
 }) {
   const [ref, inView] = useReveal(0.3);
-  const current = isOngoing(exp.period_text);
+  // Status "ongoing" sekarang murni dari year_end === null, bukan regex lagi.
+  const current = exp.year_end === null;
+  const periodLabel = formatExperiencePeriod(exp.year_start, exp.year_end);
   const fromLeft = align === "left";
 
   const content = (
@@ -90,7 +88,7 @@ function RoadmapNode({
         >
           {current ? "Saat ini" : "Selesai"}
         </span>
-        <span className="text-ink-soft">{exp.period_text}</span>
+        <span className="text-ink-soft">{periodLabel}</span>
       </div>
 
       <h3 className="mb-1 font-display text-lg font-medium text-ink md:text-xl">
@@ -176,9 +174,9 @@ export function ExperienceRoadmap({
   experiences: Experience[];
   limit?: number;
 }) {
-  // `experiences` datang terurut dari kolom `order` (terbaru duluan).
-  // Kalau di-limit, ambil dari AWAL array supaya home page nampilin yang
-  // paling baru.
+  // `experiences` datang terurut dari query (ongoing dulu, lalu year_start
+  // terbaru ke terlama). Kalau di-limit, ambil dari AWAL array supaya home
+  // page nampilin yang paling baru.
   const items = limit ? experiences.slice(0, limit) : experiences;
 
   return (

@@ -16,12 +16,16 @@ export async function upsertExperienceAction(
   formData: FormData,
 ): Promise<ExperienceActionState> {
   const id = formData.get("id");
+  const isOngoing = formData.get("is_ongoing") === "on";
+  const yearEndRaw = formData.get("year_end");
+
   const parsed = experienceSchema.safeParse({
     role_title: formData.get("role_title"),
-    period_text: formData.get("period_text"),
     description: formData.get("description"),
     achievement: formData.get("achievement"),
-    order: formData.get("order") || 0,
+    year_start: formData.get("year_start"),
+    // Kalau checkbox "Masih berjalan" dicentang, paksa null walau ada isian
+    year_end: isOngoing ? null : yearEndRaw,
   });
 
   if (!parsed.success) {

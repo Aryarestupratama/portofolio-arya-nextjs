@@ -14,6 +14,7 @@ import { FadeIn } from "@/components/public/FadeIn";
 import { EmptyState } from "@/components/public/EmptyState";
 import { ProjectCard } from "@/components/public/ProjectCard";
 import { ProjectCarousel } from "@/components/public/ProjectCarousel";
+import { ExperienceRoadmap } from "@/components/public/ExperienceRoadmap";
 import { Button } from "@/components/ui/button";
 import { GithubIcon, LinkedinIcon } from "@/components/public/icons";
 import { CertificatePreview } from "@/components/public/CertificatePreview";
@@ -57,7 +58,6 @@ export default async function HomePage() {
     {},
   );
 
-  const recentExperiences = experiences.slice(0, 2);
   const aboutPhotoUrl = toDirectImageUrl(profile.about_photo_url);
   const heroPhotoUrl = toDirectImageUrl(profile.hero_photo_url);
 
@@ -168,25 +168,12 @@ export default async function HomePage() {
             </h2>
           </FadeIn>
 
-          <div className="mt-8 space-y-4">
-            {recentExperiences.length === 0 && (
+          <div className="mt-8">
+            {experiences.length === 0 ? (
               <EmptyState message="Belum ada experience ditambahkan." />
+            ) : (
+              <ExperienceRoadmap experiences={experiences} limit={3} />
             )}
-            {recentExperiences.map((exp) => (
-              <FadeIn key={exp.id}>
-                <div className="rounded-xl border border-line bg-white p-5">
-                  <p className="font-mono text-xs text-ink-soft">
-                    {exp.period_text}
-                  </p>
-                  <p className="mt-1 font-display text-lg font-medium text-ink">
-                    {exp.role_title}
-                  </p>
-                  <p className="mt-2 text-sm text-ink-soft">
-                    {exp.description}
-                  </p>
-                </div>
-              </FadeIn>
-            ))}
           </div>
 
           <div className="mt-6">

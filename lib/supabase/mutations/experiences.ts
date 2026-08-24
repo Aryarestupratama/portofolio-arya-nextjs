@@ -5,6 +5,7 @@ function normalize(data: ExperienceInput) {
   return {
     ...data,
     achievement: data.achievement === "" ? null : data.achievement,
+    year_end: data.year_end ?? null,
   };
 }
 

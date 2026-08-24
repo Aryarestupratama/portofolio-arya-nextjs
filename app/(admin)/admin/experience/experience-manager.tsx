@@ -13,7 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
+import { formatExperiencePeriod } from "@/lib/validations/experiences";
 import {
   upsertExperienceAction,
   deleteExperienceAction,
@@ -23,10 +25,10 @@ import {
 type Experience = {
   id: number;
   role_title: string;
-  period_text: string;
   description: string;
   achievement: string | null;
-  order: number;
+  year_start: number;
+  year_end: number | null;
 };
 
 function SubmitButton() {
@@ -47,6 +49,9 @@ function ExperienceFormDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isOngoing, setIsOngoing] = useState(
+    experience ? experience.year_end === null : true,
+  );
   const [state, formAction] = useActionState<ExperienceActionState, FormData>(
     upsertExperienceAction,
     null,
@@ -83,16 +88,44 @@ function ExperienceFormDialog({
               required
             />
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="period_text">Periode</Label>
-            <Input
-              id="period_text"
-              name="period_text"
-              placeholder="2023 — now"
-              defaultValue={experience?.period_text}
-              required
-            />
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="year_start">Tahun Mulai</Label>
+              <Input
+                id="year_start"
+                name="year_start"
+                type="number"
+                placeholder="2023"
+                defaultValue={experience?.year_start}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="year_end">Tahun Selesai</Label>
+              <Input
+                id="year_end"
+                name="year_end"
+                type="number"
+                placeholder="2024"
+                defaultValue={experience?.year_end ?? ""}
+                disabled={isOngoing}
+              />
+            </div>
           </div>
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="is_ongoing"
+              name="is_ongoing"
+              checked={isOngoing}
+              onCheckedChange={(checked) => setIsOngoing(checked === true)}
+            />
+            <Label htmlFor="is_ongoing" className="font-normal">
+              Masih berjalan sampai sekarang
+            </Label>
+          </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="description">Deskripsi</Label>
             <Textarea
@@ -117,15 +150,6 @@ function ExperienceFormDialog({
               Konsisten satu gaya per entry: jangan campur paragraf panjang
               dengan bullet super singkat (Rules.md §7).
             </p>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="order">Urutan tampil</Label>
-            <Input
-              id="order"
-              name="order"
-              type="number"
-              defaultValue={experience?.order ?? 0}
-            />
           </div>
           {state?.error && (
             <p className="text-sm text-red-600" role="alert">
@@ -165,7 +189,7 @@ export function ExperienceManager({
               <div>
                 <p className="font-medium text-ink">{exp.role_title}</p>
                 <p className="font-mono text-xs text-ink-soft">
-                  {exp.period_text}
+                  {formatExperiencePeriod(exp.year_start, exp.year_end)}
                 </p>
                 <p className="mt-2 text-sm text-ink-soft">{exp.description}</p>
               </div>
