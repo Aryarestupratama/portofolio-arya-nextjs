@@ -83,15 +83,8 @@ export default async function HomePage() {
               )}
               <div className="mt-8 flex gap-3">
                 <Link href="/projects">
-                  <Button className="rounded-full">Lihat Projects</Button>
+                  <Button className="rounded-full">View Projects</Button>
                 </Link>
-                {profile.cv_url && (
-                  <a href={profile.cv_url} target="_blank" rel="noreferrer">
-                    <Button variant="outline" className="rounded-full">
-                      Download CV
-                    </Button>
-                  </a>
-                )}
               </div>
             </FadeIn>
 
@@ -152,11 +145,8 @@ export default async function HomePage() {
           </div>
 
           <div className="mt-6">
-            <Link
-              href="/projects"
-              className="font-mono text-xs text-[var(--cobalt)] hover:underline"
-            >
-              Lihat semua projects →
+            <Link href="/projects">
+              <Button className="rounded-full">View All Projects</Button>
             </Link>
           </div>
         </Container>
@@ -183,11 +173,8 @@ export default async function HomePage() {
           </div>
 
           <div className="mt-6">
-            <Link
-              href="/experience"
-              className="font-mono text-xs text-[var(--cobalt)] hover:underline"
-            >
-              Lihat semua experience →
+            <Link href="/experience">
+              <Button className="rounded-full">View All Experience</Button>
             </Link>
           </div>
         </Container>

@@ -63,7 +63,7 @@ export function ProjectCarousel({
   if (count === 0) return null;
 
   return (
-    <div className="relative mx-auto max-w-4xl">
+    <div className="relative mx-auto max-w-5xl">
       <div className="relative flex h-[340px] select-none items-center justify-center sm:h-[380px] md:h-[440px]">
         {projects.map((project, idx) => {
           let offset = idx - currentIndex;
@@ -92,7 +92,7 @@ export function ProjectCarousel({
           return (
             <motion.div
               key={project.slug}
-              className="absolute w-[240px] sm:w-[280px] md:w-[340px]"
+              className="absolute w-[280px] sm:w-[340px] md:w-[420px]"
               style={{ pointerEvents: isVisible ? "auto" : "none" }}
               animate={animate}
               transition={{ type: "spring", stiffness: 260, damping: 30 }}
@@ -110,8 +110,8 @@ export function ProjectCarousel({
                     src={project.thumbnail_url}
                     alt={project.title}
                     fill
-                    sizes="340px"
-                    className="object-cover"
+                    sizes="420px"
+                    className="object-contain"
                   />
                 </div>
 

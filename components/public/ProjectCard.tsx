@@ -47,7 +47,7 @@ export function ProjectCard({
                       ? "(min-width: 640px) 50vw, 100vw"
                       : "(min-width: 640px) 50vw, 100vw"
                   }
-                  className="object-cover"
+                  className="object-contain"
                 />
               ) : (
                 <span className="font-mono text-xs text-ink-soft">
