@@ -52,7 +52,7 @@ export function GalleryDialog({ images }: { images: ProjectImage[] }) {
               alt={img.caption ?? ""}
               fill
               sizes="(min-width: 768px) 33vw, 50vw"
-              className="object-cover"
+              className="object-contain"
             />
           </button>
         ))}

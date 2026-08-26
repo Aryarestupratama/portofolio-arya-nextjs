@@ -82,7 +82,7 @@ export function ProjectGallery({
         <img
           src={displayUrl}
           alt=""
-          className={`h-full w-full object-cover transition-opacity duration-200 ${
+          className={`h-full w-full object-contain transition-opacity duration-200 ${
             visible ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -112,7 +112,7 @@ export function ProjectGallery({
                 <img
                   src={img.url}
                   alt=""
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               </button>
             ))}
@@ -171,7 +171,7 @@ export function ProjectGallery({
               }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img.url} alt="" className="h-full w-full object-cover" />
+              <img src={img.url} alt="" className="h-full w-full object-contain" />
             </button>
           ))}
         </div>
