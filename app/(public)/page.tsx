@@ -144,7 +144,7 @@ export default async function HomePage() {
             )}
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 flex justify-center">
             <Link href="/projects">
               <Button className="rounded-full">View All Projects</Button>
             </Link>
@@ -172,7 +172,7 @@ export default async function HomePage() {
             )}
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 flex justify-center">
             <Link href="/experience">
               <Button className="rounded-full">View All Experience</Button>
             </Link>

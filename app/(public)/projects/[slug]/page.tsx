@@ -117,10 +117,10 @@ export default async function ProjectDetailPage({
         <Container className="max-w-3xl">
           <FadeIn>
             <Link
-              href="/#work"
+              href="/"
               className="inline-flex items-center gap-1.5 rounded-sm font-mono text-sm text-ink-soft transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
             >
-              ← Back to work
+              ← Back to Homepage
             </Link>
 
             <div className="mt-8 flex items-center gap-3">
@@ -324,11 +324,11 @@ export default async function ProjectDetailPage({
 
       {/* NEXT / BACK NAV */}
       <section className="border-t border-line">
-        <Link href="/#work" className="group block py-10">
+        <Link href="/projects" className="group block py-10">
           <Container className="max-w-3xl">
             <p className="mb-2 font-mono text-xs text-ink-soft">next</p>
             <p className="font-display text-xl font-medium text-ink transition-colors group-hover:text-[var(--cobalt)]">
-              Back to all work →
+              Back to All Projects →
             </p>
           </Container>
         </Link>

@@ -64,7 +64,7 @@ export function ProjectCarousel({
 
   return (
     <div className="relative mx-auto max-w-5xl">
-      <div className="relative flex h-[340px] select-none items-center justify-center sm:h-[380px] md:h-[440px]">
+      <div className="relative flex h-[380px] select-none items-center justify-center sm:h-[420px] md:h-[480px]">
         {projects.map((project, idx) => {
           let offset = idx - currentIndex;
           if (offset > count / 2) offset -= count;
@@ -156,7 +156,7 @@ export function ProjectCarousel({
             <ChevronRight size={18} className="text-ink" />
           </button>
 
-          <div className="mt-6 flex items-center justify-center gap-2">
+          <div className="mt-10 flex items-center justify-center gap-2 relative z-40">
             {projects.map((project, idx) => (
               <button
                 key={project.slug}
