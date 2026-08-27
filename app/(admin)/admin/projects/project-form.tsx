@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useActionState } from "react";
+import { useEffect, useState, useTransition, useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ProjectActionState } from "./actions";
+import { createSkillFromProjectFormAction } from "@/app/(admin)/admin/skills/actions";
 
 type Skill = { id: number; name: string; category: string };
 
@@ -72,6 +73,70 @@ export function ProjectForm({
     defaults?.selectedSkillIds ?? [],
   );
 
+  // Skill list lokal — mulai dari allSkills (prop dari server), tapi bisa
+  // nambah item baru begitu user create skill on-the-fly di bawah, tanpa
+  // perlu reload/refetch parent.
+  const [localSkills, setLocalSkills] = useState<Skill[]>(allSkills);
+  useEffect(() => {
+    setLocalSkills(allSkills);
+  }, [allSkills]);
+
+  // State form "+ Tambah skill baru" (nama + kategori, kategori bisa pilih
+  // yang sudah ada atau ketik baru — pola sama seperti Skills Manager).
+  const [showNewSkillForm, setShowNewSkillForm] = useState(false);
+  const [newSkillName, setNewSkillName] = useState("");
+  const [categoryMode, setCategoryMode] = useState<"select" | "new">("select");
+  const [newSkillCategory, setNewSkillCategory] = useState("");
+  const [newSkillError, setNewSkillError] = useState<string | null>(null);
+  const [isCreatingSkill, startCreatingSkill] = useTransition();
+
+  const existingCategories = Array.from(
+    new Set(localSkills.map((s) => s.category)),
+  ).sort((a, b) => a.localeCompare(b));
+
+  function handleCreateSkill() {
+    setNewSkillError(null);
+    const category =
+      categoryMode === "select"
+        ? newSkillCategory || existingCategories[0]
+        : newSkillCategory;
+
+    if (!newSkillName.trim() || !category?.trim()) {
+      setNewSkillError("Nama dan kategori wajib diisi.");
+      return;
+    }
+
+    startCreatingSkill(async () => {
+      const result = await createSkillFromProjectFormAction(
+        newSkillName.trim(),
+        category.trim(),
+      );
+      if (!result || result.error || !result.skill) {
+        setNewSkillError(result?.error ?? "Gagal menyimpan skill baru.");
+        return;
+      }
+      const createdSkill = result.skill;
+      // Skill baru langsung masuk list lokal + langsung tercentang.
+      setLocalSkills((prev) => [...prev, createdSkill]);
+      setSelectedSkills((prev) => [...prev, createdSkill.id]);
+      setShowNewSkillForm(false);
+      setNewSkillName("");
+      setNewSkillCategory("");
+      setCategoryMode("select");
+    });
+  }
+
+  // Setelah server action selesai (create/update), Next.js otomatis
+  // re-fetch data Server Component induk dan mengirim `defaults` baru ke
+  // form ini — tapi useState di atas cuma dibaca sekali saat mount, jadi
+  // checkbox bisa "nyangkut" di state lama sampai halaman di-hard-refresh.
+  // Effect ini menyinkronkan ulang setiap kali daftar skill dari server
+  // benar-benar berubah.
+  useEffect(() => {
+    setSelectedSkills(defaults?.selectedSkillIds ?? []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(defaults?.selectedSkillIds ?? [])]);
+
   function toggleSkill(id: number, checked: boolean) {
     setSelectedSkills((prev) =>
       checked ? [...prev, id] : prev.filter((sid) => sid !== id),
@@ -82,7 +147,7 @@ export function ProjectForm({
     .map((m) => `${m.label}|${m.value}`)
     .join("\n");
 
-  const skillsByCategory = allSkills.reduce<Record<string, Skill[]>>(
+  const skillsByCategory = localSkills.reduce<Record<string, Skill[]>>(
     (acc, skill) => {
       (acc[skill.category] ??= []).push(skill);
       return acc;
@@ -311,10 +376,119 @@ export function ProjectForm({
             </div>
           </div>
         ))}
-        {allSkills.length === 0 && (
+        {allSkills.length === 0 && localSkills.length === 0 && (
           <p className="text-sm text-ink-soft">
-            Belum ada skill. Tambahkan dulu di halaman Skills.
+            Belum ada skill. Tambahkan lewat form di bawah.
           </p>
+        )}
+
+        {/* ---------- Tambah skill baru on-the-fly ---------- */}
+        {!showNewSkillForm ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setShowNewSkillForm(true)}
+          >
+            + Tambah skill baru
+          </Button>
+        ) : (
+          <div className="space-y-3 rounded-lg border border-line bg-clean-white p-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="new_skill_name">Nama skill</Label>
+                <Input
+                  id="new_skill_name"
+                  value={newSkillName}
+                  onChange={(e) => setNewSkillName(e.target.value)}
+                  placeholder="e.g. Next.js"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="new_skill_category">Kategori</Label>
+                {categoryMode === "select" ? (
+                  <select
+                    id="new_skill_category"
+                    value={newSkillCategory || existingCategories[0] || ""}
+                    onChange={(e) => {
+                      if (e.target.value === "__new__") {
+                        setCategoryMode("new");
+                        setNewSkillCategory("");
+                      } else {
+                        setNewSkillCategory(e.target.value);
+                      }
+                    }}
+                    className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
+                  >
+                    {existingCategories.length === 0 && (
+                      <option value="" disabled>
+                        Belum ada kategori
+                      </option>
+                    )}
+                    {existingCategories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                    <option value="__new__">+ Tambah kategori baru...</option>
+                  </select>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      id="new_skill_category"
+                      value={newSkillCategory}
+                      onChange={(e) => setNewSkillCategory(e.target.value)}
+                      placeholder="Frontend, Backend, Tools, ..."
+                      autoFocus
+                    />
+                    {existingCategories.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setCategoryMode("select");
+                          setNewSkillCategory("");
+                        }}
+                      >
+                        Batal
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {newSkillError && (
+              <p className="text-sm text-red-600" role="alert">
+                {newSkillError}
+              </p>
+            )}
+
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                size="sm"
+                disabled={isCreatingSkill}
+                onClick={handleCreateSkill}
+              >
+                {isCreatingSkill ? "Menyimpan..." : "Simpan skill"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowNewSkillForm(false);
+                  setNewSkillError(null);
+                  setNewSkillName("");
+                  setNewSkillCategory("");
+                  setCategoryMode("select");
+                }}
+              >
+                Batal
+              </Button>
+            </div>
+          </div>
         )}
 
         {/* Native hidden inputs — ini yang benar-benar dibaca lewat

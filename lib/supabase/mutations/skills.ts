@@ -2,8 +2,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SkillInput } from "@/lib/validations/skills";
 
 export async function insertSkill(supabase: SupabaseClient, data: SkillInput) {
-  const { error } = await supabase.from("skills").insert(data);
+  const { data: inserted, error } = await supabase
+    .from("skills")
+    .insert(data)
+    .select("id, name, category")
+    .single();
   if (error) throw error;
+  return inserted;
 }
 
 export async function updateSkill(

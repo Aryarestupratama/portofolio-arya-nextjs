@@ -43,15 +43,15 @@ export default async function ProjectsPage() {
         {projects.map((project) => (
           <div
             key={project.id}
-            className="overflow-hidden rounded-xl border border-line bg-white transition-colors hover:bg-clean-white/60"
+            className="flex flex-col overflow-hidden rounded-xl border border-line bg-white transition-colors hover:bg-clean-white/60"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={getPublicImageUrl(supabase, project.thumbnail)}
               alt={project.title}
-              className="h-36 w-full object-cover"
+              className="h-36 w-full shrink-0 object-cover"
             />
-            <div className="p-4">
+            <div className="flex flex-1 flex-col p-4">
               <div className="flex items-center justify-between">
                 <p className="font-mono text-xs text-ink-soft">
                   {project.category} · {project.tahun}
@@ -60,13 +60,13 @@ export default async function ProjectsPage() {
                   {STATUS_LABEL[project.status]}
                 </span>
               </div>
-              <p className="mt-1 font-display text-lg font-medium text-ink">
+              <p className="mt-1 line-clamp-1 font-display text-lg font-medium text-ink">
                 {project.title}
               </p>
               <p className="mt-1 line-clamp-2 text-sm text-ink-soft">
                 {project.description}
               </p>
-              <div className="mt-4 flex gap-2">
+              <div className="mt-auto flex gap-2 pt-4">
                 <Link
                   href={`/admin/projects/${project.id}/edit`}
                   className="flex-1"
