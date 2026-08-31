@@ -66,7 +66,7 @@ const CATEGORY_LABEL: Record<string, string> = {
 // Design.md §4.3.5.
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-ink">
+    <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-white">
       {children}
     </p>
   );
