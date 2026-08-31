@@ -74,7 +74,7 @@ export default async function HomePage() {
         <Container>
           <div className="grid items-center gap-10 md:grid-cols-[1.3fr_1fr]">
             <FadeIn>
-              <p className="font-mono text-xs text-ink-soft">hi, i&rsquo;m</p>
+              <p className="font-mono text-base text-ink-soft md:text-lg">hi, i&rsquo;m</p>
               <h1 className="mt-2 font-display text-[2rem] font-medium tracking-tight text-ink md:text-5xl">
                 {profile.name}
               </h1>
@@ -116,7 +116,7 @@ export default async function HomePage() {
       <section id="work" className="border-b border-line py-16">
         <Container>
           <FadeIn>
-            <p className="inline-block rounded-md bg-[var(--butter-cream)] px-2 py-1 font-mono text-xs text-ink">
+            <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-ink">
               projects
             </p>
             <h2 className="mt-3 font-display text-2xl font-medium text-ink">
@@ -156,7 +156,7 @@ export default async function HomePage() {
       <section id="experience" className="border-b border-line py-16">
         <Container>
           <FadeIn>
-            <p className="inline-block rounded-md bg-[var(--butter-cream)] px-2 py-1 font-mono text-xs text-ink">
+            <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-ink">
               experience
             </p>
             <h2 className="mt-3 font-display text-2xl font-medium text-ink">
@@ -184,7 +184,7 @@ export default async function HomePage() {
       <section id="about" className="border-b border-line bg-clean-white py-16 md:py-20">
         <Container>
           <FadeIn>
-            <p className="inline-block rounded-md bg-[var(--butter-cream)] px-2 py-1 font-mono text-xs text-ink">
+            <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-ink">
               about
             </p>
             <h2 className="mt-3 font-display text-2xl font-medium text-ink">
@@ -241,7 +241,7 @@ export default async function HomePage() {
       <section id="skills" className="border-b border-line py-16">
         <Container>
           <FadeIn>
-            <p className="inline-block rounded-md bg-[var(--butter-cream)] px-2 py-1 font-mono text-xs text-ink">
+            <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-ink">
               skills
             </p>
             <h2 className="mt-3 font-display text-2xl font-medium text-ink">
@@ -260,7 +260,7 @@ export default async function HomePage() {
                   {items.map((skill) => (
                     <span
                       key={skill.id}
-                      className="rounded-full border border-line px-3 py-1 text-sm text-ink"
+                      className="rounded-full border border-line bg-[var(--butter-cream)] px-3 py-1 text-sm text-ink"
                     >
                       {skill.name}
                     </span>
@@ -276,7 +276,7 @@ export default async function HomePage() {
       <section id="certificates" className="py-16">
         <Container>
           <FadeIn>
-            <p className="inline-block rounded-md bg-[var(--butter-cream)] px-2 py-1 font-mono text-xs text-ink">
+            <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-ink">
               certificates
             </p>
             <h2 className="mt-3 font-display text-2xl font-medium text-ink">
@@ -298,7 +298,7 @@ export default async function HomePage() {
         <Container>
           <FadeIn>
             <div className="mb-4 text-center">
-              <p className="inline-block rounded-md bg-[var(--butter-cream)] px-2 py-1 font-mono text-xs text-ink">
+              <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-ink">
                 contact
               </p>
             </div>

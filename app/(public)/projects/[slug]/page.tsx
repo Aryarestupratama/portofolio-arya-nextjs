@@ -66,7 +66,7 @@ const CATEGORY_LABEL: Record<string, string> = {
 // Design.md §4.3.5.
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="inline-block rounded-md bg-[var(--butter-cream)] px-2 py-1 font-mono text-xs text-ink">
+    <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-ink">
       {children}
     </p>
   );
@@ -311,7 +311,7 @@ export default async function ProjectDetailPage({
                 {skills.map((s: { id: number; name: string }) => (
                   <span
                     key={s.id}
-                    className="rounded-full border border-line px-3 py-1 text-sm text-ink"
+                    className="rounded-full border border-line bg-[var(--butter-cream)] px-3 py-1 text-sm text-ink"
                   >
                     {s.name}
                   </span>
