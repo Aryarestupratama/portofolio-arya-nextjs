@@ -1,7 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
+import { IconButton } from "@/components/admin/icon-button";
 import { deleteProjectAction } from "./actions";
 
 export function DeleteProjectButton({
@@ -15,13 +16,13 @@ export function DeleteProjectButton({
 }) {
   return (
     <ConfirmDeleteDialog
-      title="Hapus project?"
-      description={`Project "${title}" beserta semua gambar & metrics-nya akan dihapus permanen.`}
+      title="Delete project?"
+      description={`Project "${title}" and all of its images & metrics will be permanently deleted.`}
       onConfirm={() => deleteProjectAction(id, slug)}
       trigger={
-        <Button variant="destructive" size="sm" className="flex-1">
-          Hapus
-        </Button>
+        <IconButton label={`Delete ${title}`} tone="danger">
+          <Trash2 size={15} />
+        </IconButton>
       }
     />
   );

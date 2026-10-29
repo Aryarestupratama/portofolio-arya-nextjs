@@ -13,6 +13,7 @@ import {
   User,
 } from "lucide-react";
 import { LogoutButton } from "@/components/admin/logout-button";
+import { cn } from "@/lib/utils";
 
 const NAV_GROUPS = [
   { 
@@ -39,7 +40,14 @@ const NAV_GROUPS = [
   },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({
+  onNavigate,
+  className,
+}: {
+  /** Dipanggil saat link diklik (dipakai drawer mobile untuk menutup diri). */
+  onNavigate?: () => void;
+  className?: string;
+}) {
   const pathname = usePathname();
 
   function isActive(href: string) {
@@ -48,7 +56,12 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col justify-between border-r border-line bg-surface">
+    <aside
+      className={cn(
+        "flex h-full w-60 shrink-0 flex-col justify-between border-r border-line bg-surface",
+        className,
+      )}
+    >
       <div className="flex min-h-0 flex-1 flex-col p-6">
         <p className="mb-1 font-display text-lg font-medium text-ink">Arya Restu Pratama</p>
         <p className="mb-8 font-mono text-[11px] text-ink-soft">admin panel</p>
@@ -66,11 +79,14 @@ export function AdminSidebar() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                      onClick={onNavigate}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                         active
-                          ? "bg-surface text-ink"
-                          : "text-ink-soft hover:bg-surface/60 hover:text-ink"
-                      }`}
+                          ? "bg-brand-wash text-brand"
+                          : "text-ink-soft hover:bg-paper hover:text-ink",
+                      )}
                     >
                       <item.icon size={16} strokeWidth={1.75} className="shrink-0" />
                       {item.label}

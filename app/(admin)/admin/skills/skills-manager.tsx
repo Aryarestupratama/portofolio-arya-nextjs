@@ -12,7 +12,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
+import { DataTable, type Column } from "@/components/admin/data-table";
+import { IconButton } from "@/components/admin/icon-button";
+import { StatusPill } from "@/components/admin/status-pill";
 import {
   upsertSkillAction,
   deleteSkillAction,
@@ -174,64 +178,85 @@ export function SkillsManager({ skills }: { skills: Skill[] }) {
     new Set(skills.map((s) => s.category)),
   ).sort((a, b) => a.localeCompare(b));
 
+  const addButton = (
+    <SkillFormDialog
+      allCategories={allCategories}
+      trigger={
+        <Button>
+          <Plus size={16} className="mr-1.5" />
+          Add skill
+        </Button>
+      }
+    />
+  );
+
+  const columns: Column<Skill>[] = [
+    {
+      id: "name",
+      header: "Name",
+      sortValue: (s) => s.name,
+      cell: (s) => <span className="font-medium text-ink">{s.name}</span>,
+    },
+    {
+      id: "category",
+      header: "Category",
+      sortValue: (s) => s.category,
+      cell: (s) => <StatusPill tone="brand">{s.category}</StatusPill>,
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      className: "w-28 text-right",
+      cell: (s) => (
+        <div className="flex justify-end gap-1">
+          <SkillFormDialog
+            skill={s}
+            allCategories={allCategories}
+            trigger={
+              <IconButton label={`Edit ${s.name}`}>
+                <Pencil size={15} />
+              </IconButton>
+            }
+          />
+          <ConfirmDeleteDialog
+            title="Delete skill?"
+            description={`Skill "${s.name}" will be permanently deleted, including its links to projects.`}
+            onConfirm={() => deleteSkillAction(s.id)}
+            trigger={
+              <IconButton label={`Delete ${s.name}`} tone="danger">
+                <Trash2 size={15} />
+              </IconButton>
+            }
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="mt-6">
-      <div className="flex justify-end">
-        <SkillFormDialog
-          allCategories={allCategories}
-          trigger={<Button>+ Tambah Skill</Button>}
-        />
-      </div>
-
-      <div className="mt-4 overflow-hidden rounded-xl border border-line">
-        <table className="w-full text-sm">
-          <thead className="bg-surface text-left text-ink-soft">
-            <tr>
-              <th className="px-4 py-2 font-medium">Nama</th>
-              <th className="px-4 py-2 font-medium">Kategori</th>
-              <th className="px-4 py-2 font-medium text-right">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {skills.length === 0 && (
-              <tr>
-                <td colSpan={3} className="px-4 py-8 text-center text-ink-soft">
-                  Belum ada skill. Klik &ldquo;+ Tambah Skill&rdquo; untuk mulai.
-                </td>
-              </tr>
-            )}
-            {skills.map((skill) => (
-              <tr key={skill.id} className="border-t border-line">
-                <td className="px-4 py-2 text-ink">{skill.name}</td>
-                <td className="px-4 py-2 text-ink-soft">{skill.category}</td>
-                <td className="px-4 py-2">
-                  <div className="flex justify-end gap-2">
-                    <SkillFormDialog
-                      skill={skill}
-                      allCategories={allCategories}
-                      trigger={
-                        <Button variant="outline" size="sm">
-                          Edit
-                        </Button>
-                      }
-                    />
-                    <ConfirmDeleteDialog
-                      title="Hapus skill?"
-                      description={`Skill "${skill.name}" akan dihapus permanen, termasuk relasinya ke project.`}
-                      onConfirm={() => deleteSkillAction(skill.id)}
-                      trigger={
-                        <Button variant="destructive" size="sm">
-                          Hapus
-                        </Button>
-                      }
-                    />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        data={skills}
+        columns={columns}
+        rowKey={(s) => s.id}
+        searchText={(s) => `${s.name} ${s.category}`}
+        searchPlaceholder="Search skills…"
+        noun="skills"
+        defaultSort={{ id: "category", dir: "asc" }}
+        pageSizeOptions={[20, 50, 100]}
+        filters={[
+          {
+            id: "category",
+            label: "Category",
+            options: allCategories.map((c) => ({ value: c, label: c })),
+            getValue: (s) => s.category,
+          },
+        ]}
+        toolbarActions={addButton}
+        emptyTitle="No skills yet"
+        emptyDescription="Add the tools and technologies you want to show on your portfolio."
+        emptyAction={addButton}
+      />
     </div>
   );
 }

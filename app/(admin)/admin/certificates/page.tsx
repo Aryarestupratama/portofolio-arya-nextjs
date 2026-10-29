@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCertificates } from "@/lib/supabase/queries/certificates";
 import { getCertificateUrl } from "@/lib/supabase/storage";
+import { PageHeader } from "@/components/admin/page-header";
 import { CertificatesManager } from "./certificates-manager";
 
 export const metadata = {
@@ -19,10 +20,10 @@ export default async function CertificatesPage() {
 
   return (
     <div>
-      <p className="font-mono text-xs text-ink-soft">admin</p>
-      <h1 className="font-display text-2xl font-medium text-ink">
-        Certificates
-      </h1>
+      <PageHeader
+        title="Certificates"
+        description={`${certificates.length} certificates. Shown on the public Certificates section.`}
+      />
       <CertificatesManager certificates={certificatesWithUrls} />
     </div>
   );

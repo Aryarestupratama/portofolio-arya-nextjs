@@ -12,7 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
 import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
+import { DataTable, type Column } from "@/components/admin/data-table";
+import { IconButton, IconLinkButton } from "@/components/admin/icon-button";
 import {
   upsertCertificateAction,
   deleteCertificateAction,
@@ -151,65 +154,116 @@ export function CertificatesManager({
 }: {
   certificates: Certificate[];
 }) {
+  const addButton = (
+    <CertificateFormDialog
+      trigger={
+        <Button>
+          <Plus size={16} className="mr-1.5" />
+          Add certificate
+        </Button>
+      }
+    />
+  );
+
+  const issuers = Array.from(new Set(certificates.map((c) => c.issuer))).sort(
+    (a, b) => a.localeCompare(b),
+  );
+  const years = Array.from(new Set(certificates.map((c) => c.year_start))).sort(
+    (a, b) => b - a,
+  );
+
+  const columns: Column<Certificate>[] = [
+    {
+      id: "title",
+      header: "Title",
+      sortValue: (c) => c.title,
+      cell: (c) => <span className="font-medium text-ink">{c.title}</span>,
+    },
+    {
+      id: "issuer",
+      header: "Issuer",
+      sortValue: (c) => c.issuer,
+      hideBelow: "sm",
+      cell: (c) => <span className="text-ink-soft">{c.issuer}</span>,
+    },
+    {
+      id: "year",
+      header: "Year",
+      sortValue: (c) => c.year_start,
+      cell: (c) => (
+        <span className="whitespace-nowrap font-mono text-xs text-ink-soft">
+          {c.year_start}
+          {c.year_end ? ` – ${c.year_end}` : ""}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      className: "w-36 text-right",
+      cell: (c) => (
+        <div className="flex justify-end gap-1">
+          {c.certificate_display_url && (
+            <IconLinkButton
+              href={c.certificate_display_url}
+              label={`Open file for ${c.title}`}
+              external
+            >
+              <ExternalLink size={15} />
+            </IconLinkButton>
+          )}
+          <CertificateFormDialog
+            certificate={c}
+            trigger={
+              <IconButton label={`Edit ${c.title}`}>
+                <Pencil size={15} />
+              </IconButton>
+            }
+          />
+          <ConfirmDeleteDialog
+            title="Delete this certificate?"
+            description={`"${c.title}" will be permanently deleted.`}
+            onConfirm={() => deleteCertificateAction(c.id)}
+            trigger={
+              <IconButton label={`Delete ${c.title}`} tone="danger">
+                <Trash2 size={15} />
+              </IconButton>
+            }
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="mt-6">
-      <div className="flex justify-end">
-        <CertificateFormDialog trigger={<Button>+ Add Certificate</Button>} />
-      </div>
-
-      <div className="mt-4 overflow-hidden rounded-xl border border-line">
-        <table className="w-full text-sm">
-          <thead className="bg-surface text-left text-ink-soft">
-            <tr>
-              <th className="px-4 py-2 font-medium">Title</th>
-              <th className="px-4 py-2 font-medium">Issuer</th>
-              <th className="px-4 py-2 font-medium">Year</th>
-              <th className="px-4 py-2 font-medium text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {certificates.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-ink-soft">
-                  No certificates yet.
-                </td>
-              </tr>
-            )}
-            {certificates.map((cert) => (
-              <tr key={cert.id} className="border-t border-line">
-                <td className="px-4 py-2 text-ink">{cert.title}</td>
-                <td className="px-4 py-2 text-ink-soft">{cert.issuer}</td>
-                <td className="px-4 py-2 text-ink-soft">
-                  {cert.year_start}
-                  {cert.year_end ? ` – ${cert.year_end}` : ""}
-                </td>
-                <td className="px-4 py-2">
-                  <div className="flex justify-end gap-2">
-                    <CertificateFormDialog
-                      certificate={cert}
-                      trigger={
-                        <Button variant="outline" size="sm">
-                          Edit
-                        </Button>
-                      }
-                    />
-                    <ConfirmDeleteDialog
-                      title="Delete this certificate?"
-                      description={`"${cert.title}" will be permanently deleted.`}
-                      onConfirm={() => deleteCertificateAction(cert.id)}
-                      trigger={
-                        <Button variant="destructive" size="sm">
-                          Delete
-                        </Button>
-                      }
-                    />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        data={certificates}
+        columns={columns}
+        rowKey={(c) => c.id}
+        searchText={(c) => `${c.title} ${c.issuer} ${c.year_start}`}
+        searchPlaceholder="Search certificates…"
+        noun="certificates"
+        defaultSort={{ id: "year", dir: "desc" }}
+        filters={[
+          {
+            id: "issuer",
+            label: "Issuer",
+            options: issuers.map((i) => ({ value: i, label: i })),
+            getValue: (c) => c.issuer,
+          },
+          {
+            id: "year",
+            label: "Year",
+            options: years.map((y) => ({ value: String(y), label: String(y) })),
+            getValue: (c) => String(c.year_start),
+          },
+        ]}
+        toolbarActions={addButton}
+        emptyTitle="No certificates yet"
+        emptyDescription="Upload a certificate to show it on your portfolio."
+        emptyAction={addButton}
+      />
     </div>
   );
 }

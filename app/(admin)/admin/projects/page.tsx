@@ -1,86 +1,40 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getProjects } from "@/lib/supabase/queries/projects";
 import { getPublicImageUrl } from "@/lib/supabase/storage";
-import { Button } from "@/components/ui/button";
-import { DeleteProjectButton } from "./delete-project-button";
+import { PageHeader } from "@/components/admin/page-header";
+import { ProjectsTable, type ProjectRow } from "./projects-table";
 
 export const metadata = {
   title: "Projects",
   robots: { index: false, follow: false },
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  live: "Live",
-  archived: "Archived",
-  in_progress: "In Progress",
-};
-
 export default async function ProjectsPage() {
   const supabase = await createClient();
   const projects = await getProjects(supabase);
 
+  const rows: ProjectRow[] = projects.map((p) => ({
+    id: p.id,
+    title: p.title,
+    slug: p.slug,
+    description: p.description,
+    category: p.category,
+    tahun: p.tahun,
+    status: p.status,
+    is_featured: p.is_featured,
+    thumbnailUrl: getPublicImageUrl(supabase, p.thumbnail),
+  }));
+
+  const liveCount = rows.filter((p) => p.status === "live").length;
+  const featuredCount = rows.filter((p) => p.is_featured).length;
+
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="font-mono text-xs text-ink-soft">admin</p>
-          <h1 className="font-display text-2xl font-medium text-ink">
-            Projects
-          </h1>
-        </div>
-        <Link href="/admin/projects/new">
-          <Button>+ Tambah Project</Button>
-        </Link>
-      </div>
-
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.length === 0 && (
-          <p className="col-span-full rounded-xl border border-line bg-paper px-4 py-8 text-center text-ink-soft">
-            Belum ada project. Klik &ldquo;+ Tambah Project&rdquo; untuk mulai.
-          </p>
-        )}
-        {projects.map((project) => (
-          <div
-            key={project.id}
-            className="flex flex-col overflow-hidden rounded-xl border border-line bg-paper transition-colors hover:bg-surface/60"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={getPublicImageUrl(supabase, project.thumbnail)}
-              alt={project.title}
-              className="h-36 w-full shrink-0 object-cover"
-            />
-            <div className="flex flex-1 flex-col p-4">
-              <div className="flex items-center justify-between">
-                <p className="font-mono text-xs text-ink-soft">
-                  {project.category} · {project.tahun}
-                </p>
-                <span className="rounded-full bg-surface px-2 py-0.5 font-mono text-[10px] text-ink">
-                  {STATUS_LABEL[project.status]}
-                </span>
-              </div>
-              <p className="mt-1 line-clamp-1 font-display text-lg font-medium text-ink">
-                {project.title}
-              </p>
-              <p className="mt-1 line-clamp-2 text-sm text-ink-soft">
-                {project.description}
-              </p>
-              <div className="mt-auto flex gap-2 pt-4">
-                <Link
-                  href={`/admin/projects/${project.id}/edit`}
-                  className="flex-1"
-                >
-                  <Button variant="outline" size="sm" className="w-full">
-                    Edit
-                  </Button>
-                </Link>
-                <DeleteProjectButton id={project.id} slug={project.slug} title={project.title} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <PageHeader
+        title="Projects"
+        description={`${rows.length} projects · ${liveCount} live · ${featuredCount} featured on the home page.`}
+      />
+      <ProjectsTable projects={rows} />
     </div>
   );
 }

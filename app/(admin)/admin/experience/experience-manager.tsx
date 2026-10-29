@@ -14,7 +14,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
+import { DataTable, type Column } from "@/components/admin/data-table";
+import { IconButton } from "@/components/admin/icon-button";
+import { StatusPill } from "@/components/admin/status-pill";
 import { formatExperiencePeriod } from "@/lib/validations/experiences";
 import {
   upsertExperienceAction,
@@ -168,55 +172,123 @@ export function ExperienceManager({
 }: {
   experiences: Experience[];
 }) {
+  const addButton = (
+    <ExperienceFormDialog
+      trigger={
+        <Button>
+          <Plus size={16} className="mr-1.5" />
+          Add experience
+        </Button>
+      }
+    />
+  );
+
+  const columns: Column<Experience>[] = [
+    {
+      id: "role",
+      header: "Role",
+      sortValue: (e) => e.role_title,
+      cell: (e) => (
+        <div className="min-w-0 max-w-md">
+          <p className="font-medium text-ink">{e.role_title}</p>
+          <p className="mt-0.5 line-clamp-1 text-xs text-ink-soft">
+            {e.description}
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: "period",
+      header: "Period",
+      sortValue: (e) => e.year_start,
+      cell: (e) => (
+        <span className="whitespace-nowrap font-mono text-xs text-ink-soft">
+          {formatExperiencePeriod(e.year_start, e.year_end)}
+        </span>
+      ),
+    },
+    {
+      id: "status",
+      header: "Status",
+      hideBelow: "sm",
+      sortValue: (e) => (e.year_end === null ? 0 : 1),
+      cell: (e) =>
+        e.year_end === null ? (
+          <StatusPill tone="brand" dot pulse>
+            Ongoing
+          </StatusPill>
+        ) : (
+          <StatusPill tone="muted">Finished</StatusPill>
+        ),
+    },
+    {
+      id: "achievement",
+      header: "Achievement",
+      hideBelow: "md",
+      cell: (e) =>
+        e.achievement ? (
+          <StatusPill tone="neutral">Filled</StatusPill>
+        ) : (
+          <span className="text-xs text-ink-soft">—</span>
+        ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      className: "w-28 text-right",
+      cell: (e) => (
+        <div className="flex justify-end gap-1">
+          <ExperienceFormDialog
+            experience={e}
+            trigger={
+              <IconButton label={`Edit ${e.role_title}`}>
+                <Pencil size={15} />
+              </IconButton>
+            }
+          />
+          <ConfirmDeleteDialog
+            title="Delete experience?"
+            description={`Entry "${e.role_title}" will be permanently deleted.`}
+            onConfirm={() => deleteExperienceAction(e.id)}
+            trigger={
+              <IconButton label={`Delete ${e.role_title}`} tone="danger">
+                <Trash2 size={15} />
+              </IconButton>
+            }
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="mt-6">
-      <div className="flex justify-end">
-        <ExperienceFormDialog trigger={<Button>+ Tambah Experience</Button>} />
-      </div>
-
-      <div className="mt-4 space-y-3">
-        {experiences.length === 0 && (
-          <p className="rounded-xl border border-line bg-paper px-4 py-8 text-center text-ink-soft">
-            Belum ada experience.
-          </p>
-        )}
-        {experiences.map((exp) => (
-          <div
-            key={exp.id}
-            className="rounded-xl border border-line bg-paper p-4"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="font-medium text-ink">{exp.role_title}</p>
-                <p className="font-mono text-xs text-ink-soft">
-                  {formatExperiencePeriod(exp.year_start, exp.year_end)}
-                </p>
-                <p className="mt-2 text-sm text-ink-soft">{exp.description}</p>
-              </div>
-              <div className="flex shrink-0 gap-2">
-                <ExperienceFormDialog
-                  experience={exp}
-                  trigger={
-                    <Button variant="outline" size="sm">
-                      Edit
-                    </Button>
-                  }
-                />
-                <ConfirmDeleteDialog
-                  title="Hapus experience?"
-                  description={`Entry "${exp.role_title}" akan dihapus permanen.`}
-                  onConfirm={() => deleteExperienceAction(exp.id)}
-                  trigger={
-                    <Button variant="destructive" size="sm">
-                      Hapus
-                    </Button>
-                  }
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <DataTable
+        data={experiences}
+        columns={columns}
+        rowKey={(e) => e.id}
+        searchText={(e) =>
+          `${e.role_title} ${e.description} ${e.achievement ?? ""}`
+        }
+        searchPlaceholder="Search experience…"
+        noun="experience entries"
+        defaultSort={{ id: "period", dir: "desc" }}
+        filters={[
+          {
+            id: "status",
+            label: "Status",
+            options: [
+              { value: "ongoing", label: "Ongoing" },
+              { value: "finished", label: "Finished" },
+            ],
+            getValue: (e) => (e.year_end === null ? "ongoing" : "finished"),
+          },
+        ]}
+        toolbarActions={addButton}
+        emptyTitle="No experience yet"
+        emptyDescription="Add your work, freelance, or organization experience."
+        emptyAction={addButton}
+      />
     </div>
   );
 }

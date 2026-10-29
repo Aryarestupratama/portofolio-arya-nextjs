@@ -1,7 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
+import { IconButton } from "@/components/admin/icon-button";
 import { deleteRecruitmentAction } from "./actions";
 
 export function DeleteRecruitmentButton({
@@ -13,13 +14,13 @@ export function DeleteRecruitmentButton({
 }) {
   return (
     <ConfirmDeleteDialog
-      title="Hapus lamaran?"
-      description={`Entry "${label}" akan dihapus permanen.`}
+      title="Delete application?"
+      description={`Entry "${label}" will be permanently deleted.`}
       onConfirm={() => deleteRecruitmentAction(id)}
       trigger={
-        <Button variant="destructive" size="sm">
-          Hapus
-        </Button>
+        <IconButton label={`Delete ${label}`} tone="danger">
+          <Trash2 size={15} />
+        </IconButton>
       }
     />
   );

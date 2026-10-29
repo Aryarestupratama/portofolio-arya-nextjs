@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getExperiences } from "@/lib/supabase/queries/experiences";
+import { PageHeader } from "@/components/admin/page-header";
 import { ExperienceManager } from "./experience-manager";
 
 export const metadata = {
@@ -13,10 +14,10 @@ export default async function ExperiencePage() {
 
   return (
     <div>
-      <p className="font-mono text-xs text-ink-soft">admin</p>
-      <h1 className="font-display text-2xl font-medium text-ink">
-        Experience
-      </h1>
+      <PageHeader
+        title="Experience"
+        description={`${experiences.length} entries. Shown on the public Experience section.`}
+      />
       <ExperienceManager experiences={experiences} />
     </div>
   );
