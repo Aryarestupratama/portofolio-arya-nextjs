@@ -3,7 +3,7 @@ import { getPublicExperiences } from "@/lib/supabase/queries/public";
 import { Container } from "@/components/public/Container";
 import { FadeIn } from "@/components/public/FadeIn";
 import { EmptyState } from "@/components/public/EmptyState";
-import { ExperienceRoadmap } from "@/components/public/ExperienceRoadmap";
+import { ExperienceList } from "@/components/public/ExperienceList";
 
 export const revalidate = 3600;
 
@@ -17,22 +17,22 @@ export default async function ExperiencePage() {
   const experiences = await getPublicExperiences(supabase);
 
   return (
-    <section className="py-16">
-      <Container>
+    <section className="pb-24 pt-10 md:pb-32 md:pt-16">
+      <Container wide>
         <FadeIn>
-          <p className="inline-block rounded-md bg-[var(--butter-cream)] px-2 py-1 font-mono text-xs text-ink">
-            experience
+          <p className="font-mono text-xs text-ink-soft">
+            experience · {experiences.length}
           </p>
-          <h1 className="mt-3 font-display text-3xl font-medium text-ink md:text-4xl">
+          <h1 className="mt-4 text-[clamp(2.5rem,7vw,6rem)] font-medium leading-[1.02] tracking-tight text-ink">
             Experience
           </h1>
         </FadeIn>
 
-        <div className="mt-10">
+        <div className="mt-14 max-w-4xl">
           {experiences.length === 0 ? (
             <EmptyState message="Belum ada experience ditambahkan." />
           ) : (
-            <ExperienceRoadmap experiences={experiences} />
+            <ExperienceList experiences={experiences} />
           )}
         </div>
       </Container>

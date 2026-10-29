@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { label: "Work", href: "/#work" },
   { label: "Experience", href: "/#experience" },
-  { label: "About", href: "/#about" },
+  { label: "About", href: "/about" },
 ];
 
 type HeaderClientProps = {

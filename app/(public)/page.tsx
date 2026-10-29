@@ -213,6 +213,18 @@ export default async function HomePage() {
               />
             )}
           </div>
+          <div className="mt-8">
+            <Link
+              href="/about"
+              className="group inline-flex items-center gap-2 text-sm text-ink transition-colors hover:text-brand"
+            >
+              More about me
+              <ArrowRight
+                size={16}
+                className="transition-transform group-hover:translate-x-0.5"
+              />
+            </Link>
+          </div>
         </FadeIn>
       </SectionShell>
 
