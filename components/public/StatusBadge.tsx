@@ -1,9 +1,12 @@
 import { cn } from "@/lib/utils";
 
-const STYLES: Record<string, string> = {
-  live: "bg-[var(--cobalt)] text-white",
-  in_progress: "bg-[var(--butter-cream)] text-ink",
-  archived: "bg-[var(--ink-soft)]/20 text-ink-soft",
+const STYLES: Record<string, { wrap: string; dot: string }> = {
+  live: { wrap: "bg-brand-wash text-ink", dot: "bg-brand" },
+  in_progress: {
+    wrap: "bg-surface text-ink",
+    dot: "bg-ink-soft motion-safe:animate-pulse",
+  },
+  archived: { wrap: "bg-surface text-ink-soft", dot: "bg-ink-soft/50" },
 };
 
 const LABEL: Record<string, string> = {
@@ -13,14 +16,16 @@ const LABEL: Record<string, string> = {
 };
 
 export function StatusBadge({ status }: { status: string }) {
+  const style = STYLES[status] ?? STYLES.archived;
   return (
     <span
       className={cn(
-        "rounded-full px-2 py-0.5 font-mono text-[10px]",
-        STYLES[status],
+        "inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-[10px]",
+        style.wrap,
       )}
     >
-      {LABEL[status]}
+      <span className={cn("h-1.5 w-1.5 rounded-full", style.dot)} />
+      {LABEL[status] ?? status}
     </span>
   );
 }

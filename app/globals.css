@@ -162,3 +162,27 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ------------------------------------------------------------------
+   BrowserFrame: auto-scroll screenshot saat hover (tanpa JavaScript).
+   .frame-viewport = area tampil (container-type size => satuan cqh),
+   .frame-scroll   = gambar tinggi yang digeser ke bawah.
+   Dipicu hover/focus pada elemen induk dengan class .frame-host.
+   Hanya aktif di perangkat hover dan tanpa prefers-reduced-motion.
+------------------------------------------------------------------ */
+@layer components {
+  .frame-viewport {
+    container-type: size;
+  }
+  .frame-scroll {
+    transition: transform 700ms ease-out;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .frame-host:hover .frame-scroll,
+    .frame-host:focus-visible .frame-scroll {
+      /* geser sejauh (tinggi gambar - tinggi viewport); tidak bergerak jika gambar lebih pendek */
+      transform: translateY(min(0px, calc(100cqh - 100%)));
+      transition: transform 7s ease-in-out;
+    }
+  }
+}

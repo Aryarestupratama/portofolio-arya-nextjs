@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getPublicImageUrl, getCertificateUrl } from "@/lib/supabase/storage";
+import { getCertificateUrl } from "@/lib/supabase/storage";
 import { getProfile } from "@/lib/supabase/queries/profile";
 import { toDirectImageUrl } from "@/lib/utils/gdrive";
+import { toProjectCardData } from "@/lib/utils/project-card";
 import {
   getFeaturedProjects,
   getPublicSkills,
@@ -13,18 +14,26 @@ import { Container } from "@/components/public/Container";
 import { FadeIn } from "@/components/public/FadeIn";
 import { EmptyState } from "@/components/public/EmptyState";
 import { ProjectCard } from "@/components/public/ProjectCard";
-import { ProjectCarousel } from "@/components/public/ProjectCarousel";
+import { WorkRail } from "@/components/public/WorkRail";
+import { SectionShell } from "@/components/public/SectionShell";
 import { ExperienceRoadmap } from "@/components/public/ExperienceRoadmap";
 import { Button } from "@/components/ui/button";
 import { GithubIcon, LinkedinIcon } from "@/components/public/icons";
 import { CertificatePreview } from "@/components/public/CertificatePreview";
-import { Mail, Download } from "lucide-react";
+import { Mail, Download, ArrowRight, ArrowUpRight } from "lucide-react";
 
 // ISR: halaman publik cache, revalidate via revalidatePath saat owner
 // update konten (Architecture.md §2.1). Server Action updateProfile
 // juga panggil revalidatePath("/") jadi perubahan profile langsung
 // kepakai tanpa perlu redeploy.
 export const revalidate = 3600;
+
+// Kata terakhir tagline dirender sebagai aksen serif italic (Design.md v2 §6.1).
+function splitTagline(text: string) {
+  const words = text.trim().split(/\s+/);
+  const last = words.pop() ?? "";
+  return { rest: words.join(" "), last };
+}
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -37,18 +46,7 @@ export default async function HomePage() {
       getPublicCertificates(supabase),
     ]);
 
-  const featuredWithUrls = featuredProjects.map((p) => ({
-    slug: p.slug,
-    title: p.title,
-    description: p.description,
-    thumbnail_url: getPublicImageUrl(supabase, p.thumbnail),
-    category: p.category,
-    tahun: p.tahun,
-    status: p.status,
-    skillNames: (p.project_skill ?? []).map(
-      (ps: { skills: { name: string } }) => ps.skills.name,
-    ),
-  }));
+  const featured = featuredProjects.map((p) => toProjectCardData(supabase, p));
 
   const certificatesWithUrls = certificates.map((cert) => ({
     ...cert,
@@ -65,92 +63,105 @@ export default async function HomePage() {
   );
 
   const aboutPhotoUrl = toDirectImageUrl(profile.about_photo_url);
-  const heroPhotoUrl = toDirectImageUrl(profile.hero_photo_url);
+
+  const heroTitle = splitTagline(
+    profile.tagline || `Hi, I'm ${profile.name}`,
+  );
+  const heroFacts = [
+    { label: "role", value: profile.role, live: false },
+    { label: "location", value: profile.location, live: false },
+    { label: "status", value: profile.availability, live: true },
+  ].filter((f): f is { label: string; value: string; live: boolean } =>
+    Boolean(f.value),
+  );
 
   return (
     <>
       {/* ---------- Hero ---------- */}
-      <section id="top" className="border-b border-line py-20 md:py-28">
-        <Container>
-          <div className="grid items-center gap-10 md:grid-cols-[1.3fr_1fr]">
-            <FadeIn>
-              <p className="font-mono text-xl text-ink-soft md:text-2xl">hi, i&rsquo;m</p>
-              <h1 className="mt-2 font-display text-[2rem] font-medium tracking-tight text-ink md:text-5xl">
-                {profile.name}
-              </h1>
-              {profile.tagline && (
-                <p className="mt-4 max-w-xl text-ink-soft">{profile.tagline}</p>
-              )}
-              <div className="mt-8 flex gap-3">
-                <Link href="/projects">
-                  <Button className="rounded-full">View Projects</Button>
-                </Link>
-              </div>
-            </FadeIn>
-
-            <FadeIn delay={0.1}>
-              <div className="flex justify-center md:justify-end">
-                {heroPhotoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={heroPhotoUrl}
-                    alt={profile.name}
-                    width={280}
-                    height={320}
-                    className="h-72 w-64 rounded-2xl border border-line object-cover md:h-80 md:w-72"
-                  />
-                ) : (
-                  <div
-                    className="h-72 w-64 rounded-2xl border border-line bg-clean-white md:h-80 md:w-72"
-                    role="img"
-                    aria-label="Hero photo (placeholder)"
-                  />
-                )}
-              </div>
-            </FadeIn>
-          </div>
-        </Container>
-      </section>
-
-      {/* ---------- Featured Projects ---------- */}
-      <section id="work" className="border-b border-line py-16">
-        <Container>
+      <section id="top" className="border-b border-line pb-20 pt-16 md:pb-28 md:pt-28">
+        <Container wide>
           <FadeIn>
-            <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-white">
-              projects
+            <p className="font-mono text-xs text-ink-soft md:text-sm">
+              hello, i&rsquo;m {profile.name}
             </p>
-            <h2 className="mt-3 font-display text-2xl font-medium text-ink">
-              Featured Projects
-            </h2>
+            <h1 className="mt-6 max-w-6xl text-balance text-[clamp(2.5rem,7vw,6.5rem)] font-medium leading-[1.02] tracking-tight text-ink">
+              {heroTitle.rest}{" "}
+              <span className="box-decoration-clone rounded-md bg-brand-wash px-[0.14em] font-serif text-[1.06em] font-normal italic text-brand">
+                {heroTitle.last}
+              </span>
+            </h1>
+
+            <div className="mt-10 flex flex-wrap gap-3">
+              <Button asChild size="lg">
+                <Link href="#work">
+                  View work
+                  <ArrowRight size={16} className="ml-2" />
+                </Link>
+              </Button>
+              {profile.cv_url && (
+                <Button asChild size="lg" variant="outline">
+                  <a href={profile.cv_url} target="_blank" rel="noreferrer">
+                    CV
+                    <ArrowUpRight size={16} className="ml-2" />
+                  </a>
+                </Button>
+              )}
+            </div>
           </FadeIn>
 
-          <div className="mt-8">
-            {featuredWithUrls.length === 0 && (
-              <EmptyState message="Belum ada featured project." />
-            )}
-            {featuredWithUrls.length >= 3 ? (
-              <ProjectCarousel projects={featuredWithUrls} />
-            ) : (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                {featuredWithUrls.map((p, i) => (
-                  <ProjectCard
-                    key={p.slug}
-                    project={p}
-                    delay={i * 0.1}
-                    featured={i === 0}
-                  />
+          {heroFacts.length > 0 && (
+            <FadeIn delay={0.1}>
+              <dl className="mt-16 grid border-t border-line sm:grid-cols-3 md:mt-24">
+                {heroFacts.map((fact) => (
+                  <div
+                    key={fact.label}
+                    className="border-b border-line py-5 sm:border-b-0 sm:border-l sm:px-6 sm:first:border-l-0 sm:first:pl-0"
+                  >
+                    <dt className="font-mono text-xs text-ink-soft">
+                      {fact.label}
+                    </dt>
+                    <dd className="mt-2 flex items-center gap-2 text-sm text-ink md:text-base">
+                      {fact.live && (
+                        <span className="relative flex h-2 w-2" aria-hidden="true">
+                          <span className="absolute inline-flex h-full w-full rounded-full bg-brand opacity-60 motion-safe:animate-ping" />
+                          <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
+                        </span>
+                      )}
+                      {fact.value}
+                    </dd>
+                  </div>
                 ))}
-              </div>
-            )}
-          </div>
-
-          <div className="mt-6 flex justify-center">
-            <Link href="/projects">
-              <Button className="rounded-full">View All Projects</Button>
-            </Link>
-          </div>
+              </dl>
+            </FadeIn>
+          )}
         </Container>
       </section>
+
+      {/* ---------- Selected work ---------- */}
+      <SectionShell id="work" index="01" label="work">
+        {featured.length === 0 ? (
+          <EmptyState message="Belum ada featured project." />
+        ) : (
+          <WorkRail title="Selected work">
+            {featured.map((p, i) => (
+              <ProjectCard key={p.slug} project={p} delay={i * 0.08} />
+            ))}
+          </WorkRail>
+        )}
+
+        <div className="mt-4">
+          <Link
+            href="/projects"
+            className="group inline-flex items-center gap-2 text-sm text-ink transition-colors hover:text-brand"
+          >
+            All projects
+            <ArrowRight
+              size={16}
+              className="transition-transform group-hover:translate-x-0.5"
+            />
+          </Link>
+        </div>
+      </SectionShell>
 
       {/* ---------- Recent experience ---------- */}
       <section id="experience" className="border-b border-line py-16">

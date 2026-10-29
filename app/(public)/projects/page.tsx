@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { getPublicImageUrl } from "@/lib/supabase/storage";
 import { getAllPublicProjects } from "@/lib/supabase/queries/public";
+import { toProjectCardData } from "@/lib/utils/project-card";
 import { Container } from "@/components/public/Container";
 import { FadeIn } from "@/components/public/FadeIn";
 import { EmptyState } from "@/components/public/EmptyState";
@@ -33,18 +33,7 @@ export default async function ProjectsPage({
     ? allProjects.filter((p) => p.category === category)
     : allProjects;
 
-  const projects = filtered.map((p) => ({
-    slug: p.slug,
-    title: p.title,
-    description: p.description,
-    thumbnail_url: getPublicImageUrl(supabase, p.thumbnail),
-    category: p.category,
-    tahun: p.tahun,
-    status: p.status,
-    skillNames: (p.project_skill ?? []).map(
-      (ps: { skills: { name: string } }) => ps.skills.name,
-    ),
-  }));
+  const projects = filtered.map((p) => toProjectCardData(supabase, p));
 
   return (
     <section className="py-16">

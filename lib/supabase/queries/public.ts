@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export async function getFeaturedProjects(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from("projects")
-    .select("*, project_skill(skills(id, name))")
+    .select("*, project_metrics(*), project_skill(skills(id, name))")
     .eq("is_featured", true)
     .order("created_at", { ascending: false })
     .limit(6);
@@ -14,7 +14,7 @@ export async function getFeaturedProjects(supabase: SupabaseClient) {
 export async function getAllPublicProjects(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from("projects")
-    .select("*, project_skill(skills(id, name))")
+    .select("*, project_metrics(*), project_skill(skills(id, name))")
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data;

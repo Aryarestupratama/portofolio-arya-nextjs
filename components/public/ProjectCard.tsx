@@ -1,9 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
+import { BrowserFrame } from "./BrowserFrame";
+import { StackChip } from "./StackChip";
 import { StatusBadge } from "./StatusBadge";
 import { FadeIn } from "./FadeIn";
 
-type Project = {
+export type ProjectCardData = {
   slug: string;
   title: string;
   description?: string;
@@ -12,84 +13,67 @@ type Project = {
   tahun: number;
   status: string;
   skillNames: string[];
+  /** Tanpa protokol, untuk kotak URL di BrowserFrame. */
+  displayUrl: string;
+  /** Metric utama (order terkecil) dari project_metrics, kalau ada. */
+  metric?: { value: string; label: string } | null;
 };
 
-// Design.md §4.3.1: mode "featured" (col-span-2) vs normal.
-// StatusBadge (live/in_progress/archived) adalah penambahan baru sesuai
-// Design.md §4.2 — bukan bagian dari desain lama, jadi tetap dipertahankan
-// di samping elemen dari desain lama (fallback "No preview", CTA featured).
+// Design.md v2 §5.3: BrowserFrame + judul + 1 baris deskripsi + meta mono +
+// chip stack + metric highlight. Seluruh card adalah satu link; hover
+// pada link memicu auto-scroll screenshot (class `frame-host`).
 export function ProjectCard({
   project,
-  featured = false,
   delay = 0,
 }: {
-  project: Project;
-  featured?: boolean;
+  project: ProjectCardData;
   delay?: number;
 }) {
   return (
-    <FadeIn delay={delay} className={featured ? "sm:col-span-2" : undefined}>
-      <Link href={`/projects/${project.slug}`} className="block h-full">
-        <div className="group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white transition-colors hover:border-[var(--ink)]">
-          <div
-            className={featured ? "grid h-full gap-0 sm:grid-cols-2" : undefined}
-          >
-            <div
-              className={`relative flex items-center justify-center overflow-hidden bg-[var(--clean-white)] ${featured ? "h-56 sm:h-full" : "h-44"}`}
-            >
-              {project.thumbnail_url ? (
-                <Image
-                  src={project.thumbnail_url}
-                  alt={project.title}
-                  fill
-                  sizes={
-                    featured
-                      ? "(min-width: 640px) 50vw, 100vw"
-                      : "(min-width: 640px) 50vw, 100vw"
-                  }
-                  className="object-contain"
-                />
-              ) : (
-                <span className="font-mono text-xs text-ink-soft">
-                  No preview
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col justify-center p-5">
-              <div className="flex items-center justify-between">
-                <p className="font-mono text-xs text-ink-soft">
-                  {project.category} · {project.tahun}
-                </p>
-                <StatusBadge status={project.status} />
-              </div>
-              <p className="mt-2 font-display text-lg font-medium text-ink group-hover:text-[var(--cobalt)]">
-                {project.title}
-              </p>
-              {project.description && (
-                <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-ink-soft">
-                  {project.description}
-                </p>
-              )}
-              {project.skillNames.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {project.skillNames.slice(0, 3).map((name) => (
-                    <span
-                      key={name}
-                      className="rounded-md bg-[var(--clean-white)] px-2 py-0.5 font-mono text-[10px] text-ink"
-                    >
-                      {name}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {featured && (
-                <span className="mt-4 font-mono text-sm font-medium text-[var(--cobalt)]">
-                  View case study →
-                </span>
-              )}
-            </div>
-          </div>
+    <FadeIn delay={delay} className="h-full">
+      <Link
+        href={`/projects/${project.slug}`}
+        className="frame-host group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-4"
+      >
+        <BrowserFrame
+          src={project.thumbnail_url}
+          alt={`${project.title} — screenshot`}
+          url={project.displayUrl}
+        />
+
+        <div className="mt-5 flex items-start justify-between gap-4">
+          <h3 className="text-lg font-medium tracking-tight text-ink transition-colors group-hover:text-brand md:text-xl">
+            {project.title}
+          </h3>
+          <StatusBadge status={project.status} />
         </div>
+
+        <p className="mt-1 font-mono text-xs text-ink-soft">
+          {project.category} · {project.tahun}
+        </p>
+
+        {project.description && (
+          <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-ink-soft">
+            {project.description}
+          </p>
+        )}
+
+        {project.skillNames.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-1.5">
+            {project.skillNames.slice(0, 4).map((name) => (
+              <StackChip key={name}>{name}</StackChip>
+            ))}
+          </div>
+        )}
+
+        {project.metric && (
+          <div className="mt-5 flex items-baseline gap-3 border-t border-line pt-4">
+            <span className="font-mono text-2xl font-medium text-brand">
+              {project.metric.value}
+            </span>
+            <span className="text-xs text-ink-soft">{project.metric.label}</span>
+          </div>
+        )}
       </Link>
     </FadeIn>
   );
