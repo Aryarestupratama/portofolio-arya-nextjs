@@ -186,3 +186,28 @@
     }
   }
 }
+
+/* ------------------------------------------------------------------
+   GiantWordmark: teks outline tipis yang terisi gradasi brand saat hover.
+   Di perangkat tanpa hover (touch) langsung terisi penuh.
+------------------------------------------------------------------ */
+@layer components {
+  .wordmark {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--ink);
+    background-image: linear-gradient(90deg, var(--brand), var(--brand-wash));
+    background-repeat: no-repeat;
+    background-size: 0% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    transition: background-size 1.2s ease;
+  }
+  .wordmark:hover {
+    background-size: 100% 100%;
+  }
+  @media (hover: none) {
+    .wordmark {
+      background-size: 100% 100%;
+    }
+  }
+}

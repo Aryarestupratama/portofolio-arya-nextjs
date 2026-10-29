@@ -16,11 +16,12 @@ import { EmptyState } from "@/components/public/EmptyState";
 import { ProjectCard } from "@/components/public/ProjectCard";
 import { WorkRail } from "@/components/public/WorkRail";
 import { SectionShell } from "@/components/public/SectionShell";
-import { ExperienceRoadmap } from "@/components/public/ExperienceRoadmap";
+import { ExperienceList } from "@/components/public/ExperienceList";
+import { CertificateList } from "@/components/public/CertificateList";
+import { ContactSection } from "@/components/public/ContactSection";
+import { StackChip } from "@/components/public/StackChip";
 import { Button } from "@/components/ui/button";
-import { GithubIcon, LinkedinIcon } from "@/components/public/icons";
-import { CertificatePreview } from "@/components/public/CertificatePreview";
-import { Mail, Download, ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 // ISR: halaman publik cache, revalidate via revalidatePath saat owner
 // update konten (Architecture.md §2.1). Server Action updateProfile
@@ -163,219 +164,98 @@ export default async function HomePage() {
         </div>
       </SectionShell>
 
-      {/* ---------- Recent experience ---------- */}
-      <section id="experience" className="border-b border-line py-16">
-        <Container>
-          <FadeIn>
-            <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-white">
-              experience
-            </p>
-            <h2 className="mt-3 font-display text-2xl font-medium text-ink">
-              Recent Experience
-            </h2>
-          </FadeIn>
-
-          <div className="mt-8">
-            {experiences.length === 0 ? (
-              <EmptyState message="Belum ada experience ditambahkan." />
-            ) : (
-              <ExperienceRoadmap experiences={experiences} limit={3} />
-            )}
-          </div>
-
-          <div className="mt-6 flex justify-center">
-            <Link href="/experience">
-              <Button className="rounded-full">View All Experience</Button>
-            </Link>
-          </div>
-        </Container>
-      </section>
+      {/* ---------- Experience ---------- */}
+      <SectionShell id="experience" index="02" label="experience">
+        <h2 className="mb-8 text-2xl font-medium tracking-tight text-ink md:text-4xl">
+          Experience
+        </h2>
+        {experiences.length === 0 ? (
+          <EmptyState message="Belum ada experience ditambahkan." />
+        ) : (
+          <ExperienceList experiences={experiences} limit={4} />
+        )}
+        <div className="mt-8">
+          <Link
+            href="/experience"
+            className="group inline-flex items-center gap-2 text-sm text-ink transition-colors hover:text-brand"
+          >
+            All experience
+            <ArrowRight
+              size={16}
+              className="transition-transform group-hover:translate-x-0.5"
+            />
+          </Link>
+        </div>
+      </SectionShell>
 
       {/* ---------- About ---------- */}
-      <section id="about" className="border-b border-line bg-clean-white py-16 md:py-20">
-        <Container>
-          <FadeIn>
-            <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-white">
-              about
-            </p>
-            <h2 className="mt-3 font-display text-2xl font-medium text-ink">
-              Hi! I&rsquo;m {profile.name}
-            </h2>
-
-            <div className="mt-8 grid items-center gap-10 md:grid-cols-[1fr_1.3fr]">
-              <div className="flex justify-center">
-                {aboutPhotoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={aboutPhotoUrl}
-                    alt="Profile photo"
-                    width={224}
-                    height={256}
-                    className="h-64 w-56 rounded-2xl border border-line object-cover"
-                  />
-                ) : (
-                  <div
-                    className="h-64 w-56 rounded-2xl border border-line bg-white"
-                    role="img"
-                    aria-label="Profile photo (placeholder)"
-                  />
-                )}
-              </div>
-
-              <div>
-                {profile.about_bio && (
-                  <p className="text-sm leading-relaxed text-ink-soft">
-                    {profile.about_bio}
-                  </p>
-                )}
-                {(profile.location || profile.availability) && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {profile.availability && (
-                      <span className="rounded-full border border-line bg-white px-3 py-1 text-xs text-ink">
-                        {profile.availability}
-                      </span>
-                    )}
-                    {profile.location && (
-                      <span className="rounded-full border border-line bg-white px-3 py-1 text-xs text-ink-soft">
-                        {profile.location}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
+      <SectionShell id="about" index="03" label="about">
+        <FadeIn>
+          <div className="grid items-start gap-10 lg:grid-cols-[1fr_auto]">
+            <div>
+              <h2 className="sr-only">About {profile.name}</h2>
+              {profile.about_bio ? (
+                <p className="max-w-3xl whitespace-pre-line text-2xl leading-snug text-ink md:text-4xl">
+                  {profile.about_bio}
+                </p>
+              ) : (
+                <EmptyState message="Bio belum diisi." />
+              )}
             </div>
-          </FadeIn>
-        </Container>
-      </section>
-
-      {/* ---------- Skills summary ---------- */}
-      <section id="skills" className="border-b border-line py-16">
-        <Container>
-          <FadeIn>
-            <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-white">
-              skills
-            </p>
-            <h2 className="mt-3 font-display text-2xl font-medium text-ink">
-              What I work with
-            </h2>
-          </FadeIn>
-
-          <div className="mt-8 space-y-5">
-            {Object.keys(skillsByCategory).length === 0 && (
-              <EmptyState message="Belum ada skill ditambahkan." />
+            {aboutPhotoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={aboutPhotoUrl}
+                alt={`Foto ${profile.name}`}
+                width={288}
+                height={360}
+                className="aspect-[4/5] w-56 rounded-lg border border-line object-cover md:w-72"
+              />
             )}
-            {Object.entries(skillsByCategory).map(([category, items]) => (
-              <FadeIn key={category}>
-                <p className="font-mono text-xs text-ink-soft">{category}</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {items.map((skill) => (
-                    <span
-                      key={skill.id}
-                      className="rounded-full border border-line bg-[var(--butter-cream)] px-3 py-1 text-sm text-ink"
-                    >
-                      {skill.name}
-                    </span>
-                  ))}
-                </div>
-              </FadeIn>
-            ))}
           </div>
-        </Container>
-      </section>
+        </FadeIn>
+      </SectionShell>
 
-      {/* ---------- Certificates (interactive preview) ---------- */}
-      <section id="certificates" className="py-16">
-        <Container>
-          <FadeIn>
-            <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-white">
-              certificates
-            </p>
-            <h2 className="mt-3 font-display text-2xl font-medium text-ink">
+      {/* ---------- Skills + Certificates ---------- */}
+      <SectionShell index="04" label="proof">
+        <div className="grid gap-16 lg:grid-cols-2 lg:gap-12">
+          <div id="skills" className="scroll-mt-24">
+            <h2 className="mb-8 text-2xl font-medium tracking-tight text-ink">
+              Skills
+            </h2>
+            {Object.keys(skillsByCategory).length === 0 ? (
+              <EmptyState message="Belum ada skill ditambahkan." />
+            ) : (
+              <div className="space-y-6">
+                {Object.entries(skillsByCategory).map(([category, items]) => (
+                  <FadeIn key={category}>
+                    <p className="font-mono text-xs text-ink-soft">
+                      {category}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {items.map((skill) => (
+                        <StackChip key={skill.id} className="px-2.5 py-1.5 text-xs">
+                          {skill.name}
+                        </StackChip>
+                      ))}
+                    </div>
+                  </FadeIn>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div id="certificates" className="scroll-mt-24">
+            <h2 className="mb-8 text-2xl font-medium tracking-tight text-ink">
               Certificates
             </h2>
-          </FadeIn>
-
-          <div className="mt-8">
-            <CertificatePreview certificates={certificatesWithUrls} />
+            <CertificateList certificates={certificatesWithUrls} />
           </div>
-        </Container>
-      </section>
+        </div>
+      </SectionShell>
 
       {/* ---------- Contact ---------- */}
-      <section
-        id="contact"
-        className="border-t border-line bg-[var(--ink)] py-16 md:py-20"
-      >
-        <Container>
-          <FadeIn>
-            <div className="mb-4 text-center">
-              <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-white">
-                contact
-              </p>
-            </div>
-            <h2 className="text-center font-display text-3xl font-medium text-cream">
-              {profile.name}
-              {profile.role ? ` — ${profile.role}` : ""}
-            </h2>
-            {profile.contact_intro && (
-              <p className="mx-auto mt-3 max-w-md text-center leading-relaxed text-cream/60">
-                {profile.contact_intro}
-              </p>
-            )}
-
-            <div className="mt-8 flex items-center justify-center gap-6">
-              {profile.contact_email && (
-                <a
-                  href={`mailto:${profile.contact_email}`}
-                  aria-label="Email"
-                  className="text-cream/60 transition-colors hover:text-[var(--cobalt)]"
-                >
-                  <Mail size={20} />
-                </a>
-              )}
-              {profile.github_url && (
-                <a
-                  href={profile.github_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="GitHub"
-                  className="text-cream/60 transition-colors hover:text-[var(--cobalt)]"
-                >
-                  <GithubIcon className="h-5 w-5" />
-                </a>
-              )}
-              {profile.linkedin_url && (
-                <a
-                  href={profile.linkedin_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="LinkedIn"
-                  className="text-cream/60 transition-colors hover:text-[var(--cobalt)]"
-                >
-                  <LinkedinIcon className="h-5 w-5" />
-                </a>
-              )}
-            </div>
-
-            {profile.cv_url && (
-              <div className="mt-8 flex justify-center">
-                <a
-                  href={profile.cv_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group inline-flex items-center gap-2 rounded-full border border-cream/30 px-5 py-3 text-sm font-medium text-cream transition-colors hover:border-cream"
-                >
-                  <Download
-                    size={14}
-                    className="transition-transform group-hover:translate-y-0.5"
-                  />
-                  Download CV
-                </a>
-              </div>
-            )}
-          </FadeIn>
-        </Container>
-      </section>
+      <ContactSection profile={profile} />
     </>
   );
 }

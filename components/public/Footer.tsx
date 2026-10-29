@@ -1,25 +1,33 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/lib/supabase/queries/profile";
 import { Container } from "./Container";
+import { GiantWordmark } from "./GiantWordmark";
 
-// Section Contact lengkap (headline, email, social icons, CV) sudah ada
-// di Home (app/(public)/page.tsx, id="contact") — Footer sengaja dibuat
-// minimal (cuma copyright) supaya tidak duplikat, karena Footer ini
-// dirender di SEMUA halaman publik lewat layout.
-//
-// Server Component async supaya bisa fetch nama dari tabel `profile`,
-// jadi nggak perlu hardcode manual lagi.
+// Design.md v2 §6.7: baris kecil (copyright + back to top) dan nama
+// raksasa. Dirender di SEMUA halaman publik lewat layout.
 export async function Footer() {
   const supabase = await createClient();
   const profile = await getProfile(supabase);
 
   return (
-    <section className="bg-ink py-8 text-cream">
-      <Container className="flex flex-col items-center gap-1 text-center">
-        <p className="font-mono text-xs text-cream/50">
-          © {new Date().getFullYear()} {profile.name}. All rights reserved.
-        </p>
+    <footer className="bg-paper pb-6 pt-16 md:pt-24">
+      <Container wide>
+        <div className="flex items-center justify-between gap-4 font-mono text-xs text-ink-soft">
+          <p>
+            © {new Date().getFullYear()} {profile.name}
+          </p>
+          <Link
+            href="/#top"
+            className="rounded-sm transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          >
+            Back to top ↑
+          </Link>
+        </div>
+        <div className="mt-8 md:mt-12">
+          <GiantWordmark text={profile.name} />
+        </div>
       </Container>
-    </section>
+    </footer>
   );
 }
