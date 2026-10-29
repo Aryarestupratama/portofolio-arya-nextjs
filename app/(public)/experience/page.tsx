@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
 import { getPublicExperiences } from "@/lib/supabase/queries/public";
 import { Container } from "@/components/public/Container";
 import { FadeIn } from "@/components/public/FadeIn";
@@ -13,7 +13,7 @@ export const metadata = {
 };
 
 export default async function ExperiencePage() {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const experiences = await getPublicExperiences(supabase);
 
   return (

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
 import { getProfile } from "@/lib/supabase/queries/profile";
 import { getPublicExperiences } from "@/lib/supabase/queries/public";
 import { toDirectImageUrl } from "@/lib/utils/gdrive";
@@ -17,7 +17,7 @@ export const metadata = {
 };
 
 export default async function AboutPage() {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const [profile, experiences] = await Promise.all([
     getProfile(supabase),
     getPublicExperiences(supabase),

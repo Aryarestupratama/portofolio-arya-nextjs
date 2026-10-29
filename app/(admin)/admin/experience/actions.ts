@@ -45,6 +45,7 @@ export async function upsertExperienceAction(
   }
 
   revalidatePath("/experience");
+  revalidatePath("/about");
   revalidatePath("/");
   revalidatePath("/admin/experience");
   return null;
@@ -54,6 +55,7 @@ export async function deleteExperienceAction(id: number) {
   const supabase = await createClient();
   await deleteExperience(supabase, id);
   revalidatePath("/experience");
+  revalidatePath("/about");
   revalidatePath("/");
   revalidatePath("/admin/experience");
 }

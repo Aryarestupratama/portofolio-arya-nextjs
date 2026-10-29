@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
 import { getProjectBySlug } from "@/lib/supabase/queries/public";
 
 export const runtime = "edge";
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     return new Response("Missing slug", { status: 400 });
   }
 
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   let project;
   try {
     project = await getProjectBySlug(supabase, slug);

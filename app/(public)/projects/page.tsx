@@ -1,11 +1,13 @@
-import { createClient } from "@/lib/supabase/server";
+import { Suspense } from "react";
+import { createStaticClient } from "@/lib/supabase/static";
 import { getAllPublicProjects } from "@/lib/supabase/queries/public";
 import { toProjectCardData } from "@/lib/utils/project-card";
 import { Container } from "@/components/public/Container";
 import { FadeIn } from "@/components/public/FadeIn";
-import { EmptyState } from "@/components/public/EmptyState";
-import { ProjectCard } from "@/components/public/ProjectCard";
-import { CategoryTabs } from "@/components/public/CategoryTabs";
+import {
+  ProjectsExplorer,
+  ProjectsView,
+} from "@/components/public/ProjectsExplorer";
 
 export const revalidate = 3600;
 
@@ -20,20 +22,13 @@ const CATEGORIES = [
   { value: "client", label: "Client" },
 ];
 
-export default async function ProjectsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ category?: string }>;
-}) {
-  const { category } = await searchParams;
-  const supabase = await createClient();
+export default async function ProjectsPage() {
+  const supabase = createStaticClient();
   const allProjects = await getAllPublicProjects(supabase);
 
-  const filtered = category
-    ? allProjects.filter((p) => p.category === category)
-    : allProjects;
-
-  const projects = filtered.map((p) => toProjectCardData(supabase, p));
+  // Semua project dikirim ke client; filter kategori dilakukan di
+  // ProjectsExplorer (lihat komentar di sana). Halaman jadi statis/ISR.
+  const projects = allProjects.map((p) => toProjectCardData(supabase, p));
 
   const categories = CATEGORIES.map((c) => ({
     ...c,
@@ -52,23 +47,20 @@ export default async function ProjectsPage({
           </h1>
         </FadeIn>
 
-        <div className="mt-10">
-          <CategoryTabs
-            categories={categories}
-            totalCount={allProjects.length}
-          />
-        </div>
-
-        <div className="mt-12 grid grid-cols-1 gap-x-6 gap-y-14 md:grid-cols-2 xl:grid-cols-3">
-          {projects.length === 0 && (
-            <div className="col-span-full">
-              <EmptyState message="Belum ada project di kategori ini." />
-            </div>
-          )}
-          {projects.map((p, i) => (
-            <ProjectCard key={p.slug} project={p} delay={(i % 3) * 0.06} />
-          ))}
-        </div>
+        {/* useSearchParams di dalam ProjectsExplorer wajib dibungkus
+            Suspense agar halaman tetap bisa di-prerender. Fallback =
+            tampilan "All" yang sama persis. */}
+        <Suspense
+          fallback={
+            <ProjectsView
+              projects={projects}
+              categories={categories}
+              active=""
+            />
+          }
+        >
+          <ProjectsExplorer projects={projects} categories={categories} />
+        </Suspense>
       </Container>
     </section>
   );

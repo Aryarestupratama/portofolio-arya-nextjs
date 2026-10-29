@@ -51,8 +51,11 @@ function readProjectFormData(formData: FormData) {
 }
 
 function revalidatePublicProjectPaths(slug?: string) {
-  revalidatePath("/projects");
+  // "layout" = listing + semua detail (navigasi "next project" di tiap
+  // detail ikut berubah kalau ada project baru/dihapus).
+  revalidatePath("/projects", "layout");
   revalidatePath("/");
+  revalidatePath("/sitemap.xml");
   if (slug) revalidatePath(`/projects/${slug}`);
 }
 

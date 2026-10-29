@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
 import { getProfile } from "@/lib/supabase/queries/profile";
 import { Container } from "./Container";
 import { GiantWordmark } from "./GiantWordmark";
@@ -7,7 +7,7 @@ import { GiantWordmark } from "./GiantWordmark";
 // Design.md v2 §6.7: baris kecil (copyright + back to top) dan nama
 // raksasa. Dirender di SEMUA halaman publik lewat layout.
 export async function Footer() {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const profile = await getProfile(supabase);
 
   return (

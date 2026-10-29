@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
 import { getCertificateUrl } from "@/lib/supabase/storage";
 import { getProfile } from "@/lib/supabase/queries/profile";
 import { toDirectImageUrl } from "@/lib/utils/gdrive";
@@ -37,7 +37,7 @@ function splitTagline(text: string) {
 }
 
 export default async function HomePage() {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const [profile, featuredProjects, skills, experiences, certificates] =
     await Promise.all([
       getProfile(supabase),

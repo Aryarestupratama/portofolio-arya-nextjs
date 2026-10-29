@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
 import { getProfile } from "@/lib/supabase/queries/profile";
 import { HeaderClient } from "@/components/public/HeaderClient";
 
@@ -8,7 +8,7 @@ import { HeaderClient } from "@/components/public/HeaderClient";
 // HeaderClient.tsx sebagai Client Component terpisah, sesuai
 // Design.md §4.3.4.
 export async function Header() {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const profile = await getProfile(supabase);
 
   return <HeaderClient name={profile.name} role={profile.role} />;

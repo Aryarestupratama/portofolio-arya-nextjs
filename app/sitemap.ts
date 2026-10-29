@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
 
 // Next.js App Router: file ini otomatis jadi /sitemap.xml.
 // Route yang SENGAJA tidak dimasukkan (sesuai keputusan project):
@@ -7,9 +7,13 @@ import { createClient } from "@/lib/supabase/server";
 //   section di Home (lihat diskusi penghapusan halaman ini)
 // - /admin/* → private, di-block juga di robots.ts
 // - /login → tidak perlu diindex
+// ISR: tanpa ini sitemap hanya dibuat saat build dan project baru
+// tidak muncul sampai redeploy. Juga di-revalidate dari admin.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.vercel.app";
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/`, changeFrequency: "monthly", priority: 1 },

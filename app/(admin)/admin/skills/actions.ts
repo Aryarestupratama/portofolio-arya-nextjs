@@ -44,7 +44,7 @@ export async function upsertSkillAction(
 
   // Skills tampil di halaman publik /skills dan dipakai di project card,
   // jadi revalidate keduanya (Rules.md §6).
-  revalidatePath("/skills");
+  revalidatePath("/", "layout"); // skills tampil di Home + chip project
   revalidatePath("/admin/skills");
   return null;
 }
@@ -65,7 +65,7 @@ export async function createSkillFromProjectFormAction(
 
   try {
     const skill = await insertSkill(supabase, parsed.data);
-    revalidatePath("/skills");
+    revalidatePath("/", "layout"); // skills tampil di Home + chip project
     revalidatePath("/admin/skills");
     return { skill };
   } catch {
@@ -76,6 +76,6 @@ export async function createSkillFromProjectFormAction(
 export async function deleteSkillAction(id: number) {
   const supabase = await createClient();
   await deleteSkill(supabase, id);
-  revalidatePath("/skills");
+  revalidatePath("/", "layout"); // skills tampil di Home + chip project
   revalidatePath("/admin/skills");
 }

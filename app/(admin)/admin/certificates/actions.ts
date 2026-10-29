@@ -75,7 +75,7 @@ export async function upsertCertificateAction(
     await deleteCertificateFile(supabase, existingUrl);
   }
 
-  revalidatePath("/certificates");
+  revalidatePath("/"); // certificates hanya tampil di Home
   revalidatePath("/admin/certificates");
   return null;
 }
@@ -94,6 +94,6 @@ export async function deleteCertificateAction(id: number) {
     await deleteCertificateFile(supabase, target.certificate_url);
   }
 
-  revalidatePath("/certificates");
+  revalidatePath("/"); // certificates hanya tampil di Home
   revalidatePath("/admin/certificates");
 }
