@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
@@ -7,12 +8,12 @@ import { getPublicImageUrl } from "@/lib/supabase/storage";
 import {
   getProjectBySlug,
   getAllProjectSlugs,
+  getProjectNavList,
 } from "@/lib/supabase/queries/public";
 import { Container } from "@/components/public/Container";
 import { FadeIn } from "@/components/public/FadeIn";
-import { StatusBadge } from "@/components/public/StatusBadge";
-import { ProjectGallery } from "@/components/public/ProjectGallery";
-import { GithubIcon } from "@/components/public/icons";
+import { BrowserFrame } from "@/components/public/BrowserFrame";
+import { ProjectSidebar } from "@/components/public/ProjectSidebar";
 
 export const revalidate = 3600;
 
@@ -56,21 +57,8 @@ export async function generateMetadata({
   };
 }
 
-const CATEGORY_LABEL: Record<string, string> = {
-  personal: "Personal",
-  kuliah: "Coursework",
-  client: "Client",
-};
-
-// Eyebrow pill kecil ala label, dipakai di meta row & case-study headings —
-// Design.md §4.3.5.
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="inline-block rounded-md bg-[var(--cobalt)] px-2 py-1 font-mono text-xs text-white">
-      {children}
-    </p>
-  );
-}
+const displayUrl = (url: string) =>
+  url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
 export default async function ProjectDetailPage({
   params,
@@ -90,246 +78,103 @@ export default async function ProjectDetailPage({
 
   const thumbnailUrl = getPublicImageUrl(supabase, project.thumbnail);
 
-  const images = (project.project_images ?? [])
+  const images = [...(project.project_images ?? [])]
     .sort((a: { order: number }, b: { order: number }) => a.order - b.order)
-    .map((img: { id: number; image_path: string }) => ({
+    .map((img: { id: number; image_path: string; caption: string | null }) => ({
       id: img.id,
+      caption: img.caption,
       url: getPublicImageUrl(supabase, img.image_path),
-    }));
+    }))
+    .filter((img) => img.url !== thumbnailUrl);
 
-  const metrics = (project.project_metrics ?? []).sort(
+  const metrics = [...(project.project_metrics ?? [])].sort(
     (a: { order: number }, b: { order: number }) => a.order - b.order,
   );
-
-  const skills = (project.project_skill ?? []).map(
-    (ps: { skills: { id: number; name: string } }) => ps.skills,
+  const skillNames: string[] = (project.project_skill ?? []).map(
+    (ps: { skills: { name: string } }) => ps.skills.name,
   );
-  const stack = skills.map((s: { name: string }) => s.name).join(", ");
 
-  // Fallback ke `detail` kalau problem/approach/outcome semua kosong.
-  const hasCaseStudy = project.problem || project.approach || project.outcome;
-  const label = CATEGORY_LABEL[project.category] ?? project.category;
+  const frameUrl = project.demo_url ? displayUrl(project.demo_url) : project.slug;
+
+  // Next project: urutan sama dengan listing, berputar ke awal di akhir.
+  const navList = await getProjectNavList(supabase);
+  const index = navList.findIndex((p: { slug: string }) => p.slug === slug);
+  const next =
+    navList.length > 1 && index >= 0
+      ? navList[(index + 1) % navList.length]
+      : null;
 
   return (
     <>
-      {/* HERO */}
-      <section className="pb-12 pt-16">
-        <Container className="max-w-3xl">
-          <FadeIn>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 rounded-sm font-mono text-sm text-ink-soft transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
-            >
-              ← Back to Homepage
-            </Link>
-
-            <div className="mt-8 flex items-center gap-3">
-              <p className="font-mono text-xs text-[var(--cobalt)]">
-                {label}
-                {project.tahun ? ` · ${project.tahun}` : ""}
-              </p>
-              <StatusBadge status={project.status} />
+      <section className="pb-20 pt-10 md:pb-28 md:pt-14">
+        <Container wide>
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+            <div className="order-2 min-w-0 space-y-6 lg:order-1 lg:col-span-8">
+              {thumbnailUrl && (
+                <FadeIn>
+                  <BrowserFrame
+                    scrollable
+                    priority
+                    aspect="aspect-[16/10]"
+                    src={thumbnailUrl}
+                    alt={`${project.title} — screenshot`}
+                    url={frameUrl}
+                    sizes="(min-width: 1024px) 66vw, 100vw"
+                  />
+                </FadeIn>
+              )}
+              {images.map(
+                (img: { id: number; url: string; caption: string | null }) => (
+                  <FadeIn key={img.id}>
+                    <figure>
+                      <BrowserFrame
+                        scrollable
+                        aspect="aspect-[16/10]"
+                        src={img.url}
+                        alt={img.caption || `${project.title} — screenshot`}
+                        url={frameUrl}
+                        sizes="(min-width: 1024px) 66vw, 100vw"
+                      />
+                      {img.caption && (
+                        <figcaption className="mt-2 font-mono text-xs text-ink-soft">
+                          {img.caption}
+                        </figcaption>
+                      )}
+                    </figure>
+                  </FadeIn>
+                ),
+              )}
             </div>
-            <h1 className="mb-6 mt-4 font-display text-3xl font-medium leading-[1.1] tracking-tight text-ink md:text-5xl">
-              {project.title}
-            </h1>
-            <p className="max-w-xl text-base leading-relaxed text-ink-soft md:text-lg">
-              {project.description}
-            </p>
-          </FadeIn>
-        </Container>
-      </section>
 
-      {/* META ROW */}
-      <section className="pb-12">
-        <Container className="max-w-3xl">
-          <FadeIn delay={0.05}>
-            <div className="grid grid-cols-2 gap-6 border-y border-line py-6 md:grid-cols-4">
-              <div>
-                <div className="mb-2">
-                  <Eyebrow>role</Eyebrow>
-                </div>
-                <p className="text-sm font-medium text-ink">
-                  {project.role || "—"}
-                </p>
-              </div>
-              <div>
-                <div className="mb-2">
-                  <Eyebrow>timeline</Eyebrow>
-                </div>
-                <p className="text-sm font-medium text-ink">
-                  {project.timeline || "—"}
-                </p>
-              </div>
-              <div>
-                <div className="mb-2">
-                  <Eyebrow>stack</Eyebrow>
-                </div>
-                <p className="text-sm font-medium text-ink">{stack || "—"}</p>
-              </div>
-              <div>
-                <div className="mb-2">
-                  <Eyebrow>client</Eyebrow>
-                </div>
-                <p className="text-sm font-medium text-ink">
-                  {project.client || "—"}
-                </p>
-              </div>
-            </div>
-          </FadeIn>
-        </Container>
-      </section>
-
-      {/* BODY: problem / approach / outcome (metrics digabung di outcome) */}
-      <section className="pb-16">
-        <Container className="max-w-3xl">
-          <div className="space-y-12">
-            {project.problem && (
-              <FadeIn>
-                <div className="mb-4">
-                  <Eyebrow>the problem</Eyebrow>
-                </div>
-                <h2 className="mb-4 font-display text-xl font-medium text-ink">
-                  What wasn&rsquo;t working
-                </h2>
-                <p className="whitespace-pre-line text-sm leading-relaxed text-ink-soft">
-                  {project.problem}
-                </p>
-              </FadeIn>
-            )}
-
-            {project.approach && (
-              <FadeIn delay={0.05}>
-                <div className="mb-4">
-                  <Eyebrow>the approach</Eyebrow>
-                </div>
-                <h2 className="mb-4 font-display text-xl font-medium text-ink">
-                  How it was built
-                </h2>
-                <p className="whitespace-pre-line text-sm leading-relaxed text-ink-soft">
-                  {project.approach}
-                </p>
-              </FadeIn>
-            )}
-
-            {(project.outcome || metrics.length > 0) && (
-              <FadeIn delay={0.1}>
-                <div className="mb-4">
-                  <Eyebrow>outcome</Eyebrow>
-                </div>
-                <h2 className="mb-4 font-display text-xl font-medium text-ink">
-                  Result
-                </h2>
-
-                {metrics.length > 0 && (
-                  <div className="mb-4 grid gap-4 sm:grid-cols-3">
-                    {metrics.map(
-                      (m: { id: number; label: string; value: string }) => (
-                        <div
-                          key={m.id}
-                          className="rounded-xl border border-line bg-white p-5"
-                        >
-                          <p className="mb-1 font-display text-2xl font-medium text-[var(--cobalt)]">
-                            {m.value}
-                          </p>
-                          <p className="text-xs text-ink-soft">{m.label}</p>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                )}
-
-                {project.outcome && (
-                  <p className="whitespace-pre-line text-sm leading-relaxed text-ink-soft">
-                    {project.outcome}
-                  </p>
-                )}
-              </FadeIn>
-            )}
-
-            {!hasCaseStudy && project.detail && (
-              <FadeIn>
-                <div className="mb-4">
-                  <Eyebrow>about this project</Eyebrow>
-                </div>
-                <p className="whitespace-pre-line text-sm leading-relaxed text-ink-soft">
-                  {project.detail}
-                </p>
-              </FadeIn>
-            )}
+            <aside className="order-1 min-w-0 lg:order-2 lg:col-span-4">
+              <ProjectSidebar
+                project={project}
+                metrics={metrics}
+                skillNames={skillNames}
+              />
+            </aside>
           </div>
-
-          {/* Links */}
-          {(project.demo_url || project.github_url) && (
-            <div className="mt-12 flex gap-3">
-              {project.demo_url && (
-                <a
-                  href={project.demo_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full bg-[var(--ink)] px-5 py-2.5 text-sm font-medium text-cream transition-colors hover:bg-[var(--cobalt)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
-                >
-                  Live demo
-                </a>
-              )}
-              {project.github_url && (
-                <a
-                  href={project.github_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-1.5 rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-[var(--ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
-                >
-                  <GithubIcon className="h-4 w-4" />
-                  GitHub
-                </a>
-              )}
-            </div>
-          )}
         </Container>
       </section>
 
-      {/* GALLERY */}
-      <section className="pb-16">
-        <Container className="max-w-4xl">
-          {images.length > 0 && (
-            <div className="mb-4">
-              <Eyebrow>gallery</Eyebrow>
-            </div>
-          )}
-          <FadeIn>
-            <ProjectGallery thumbnailUrl={thumbnailUrl} images={images} />
-          </FadeIn>
-        </Container>
-      </section>
-
-      {skills.length > 0 && (
-        <section className="border-t border-line py-16">
-          <Container className="max-w-3xl">
-            <FadeIn>
-              <p className="font-mono text-xs text-ink-soft">skills used</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {skills.map((s: { id: number; name: string }) => (
-                  <span
-                    key={s.id}
-                    className="rounded-full border border-line bg-[var(--butter-cream)] px-3 py-1 text-sm text-ink"
-                  >
-                    {s.name}
-                  </span>
-                ))}
-              </div>
-            </FadeIn>
-          </Container>
-        </section>
-      )}
-
-      {/* NEXT / BACK NAV */}
       <section className="border-t border-line">
-        <Link href="/projects" className="group block py-10">
-          <Container className="max-w-3xl">
-            <p className="mb-2 font-mono text-xs text-ink-soft">next</p>
-            <p className="font-display text-xl font-medium text-ink transition-colors group-hover:text-[var(--cobalt)]">
-              Back to All Projects →
+        <Link
+          href={next ? `/projects/${next.slug}` : "/projects"}
+          className="group block py-14 md:py-20"
+        >
+          <Container wide>
+            <p className="font-mono text-xs text-ink-soft">
+              {next ? "next project" : "all projects"}
             </p>
+            <p className="mt-3 flex items-center gap-4 text-3xl font-medium tracking-tight text-ink transition-colors group-hover:text-brand md:text-6xl">
+              {next ? next.title : "Back to all projects"}
+              <ArrowRight className="h-6 w-6 shrink-0 transition-transform group-hover:translate-x-1 md:h-10 md:w-10" />
+            </p>
+            {next?.description && (
+              <p className="mt-4 line-clamp-2 max-w-xl text-sm text-ink-soft">
+                {next.description}
+              </p>
+            )}
           </Container>
         </Link>
       </section>

@@ -73,3 +73,14 @@ export async function getPublicExperiences(supabase: SupabaseClient) {
   if (error) throw error;
   return data;
 }
+
+// Dipakai "next project" di halaman detail: urutan sama dengan listing
+// (terbaru dulu).
+export async function getProjectNavList(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from("projects")
+    .select("slug, title, description")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data;
+}

@@ -12,6 +12,8 @@ export function BrowserFrame({
   className,
   sizes = "(min-width: 1024px) 45vw, 90vw",
   priority = false,
+  scrollable = false,
+  aspect = "aspect-[4/3]",
 }: {
   src?: string | null;
   alt: string;
@@ -20,6 +22,10 @@ export function BrowserFrame({
   className?: string;
   sizes?: string;
   priority?: boolean;
+  /** Mode detail: area tampil bisa di-scroll manual (cocok untuk screenshot full-page), tanpa auto-scroll. */
+  scrollable?: boolean;
+  /** Kelas aspect-ratio area tampil. */
+  aspect?: string;
 }) {
   return (
     <div
@@ -40,7 +46,13 @@ export function BrowserFrame({
         <div className="w-[34px]" aria-hidden="true" />
       </div>
 
-      <div className="frame-viewport relative aspect-[4/3] overflow-hidden bg-surface">
+      <div
+        className={cn(
+          "frame-viewport relative bg-surface",
+          aspect,
+          scrollable ? "overflow-y-auto overscroll-contain" : "overflow-hidden",
+        )}
+      >
         {src ? (
           <Image
             src={src}
@@ -50,7 +62,7 @@ export function BrowserFrame({
             sizes={sizes}
             priority={priority}
             style={{ width: "100%", height: "auto" }}
-            className="frame-scroll block"
+            className={scrollable ? "block" : "frame-scroll block"}
           />
         ) : (
           <div className="flex h-full items-center justify-center">

@@ -35,30 +35,38 @@ export default async function ProjectsPage({
 
   const projects = filtered.map((p) => toProjectCardData(supabase, p));
 
+  const categories = CATEGORIES.map((c) => ({
+    ...c,
+    count: allProjects.filter((p) => p.category === c.value).length,
+  }));
+
   return (
-    <section className="py-16">
-      <Container>
+    <section className="pb-24 pt-10 md:pb-32 md:pt-16">
+      <Container wide>
         <FadeIn>
-          <p className="inline-block rounded-md bg-[var(--butter-cream)] px-2 py-1 font-mono text-xs text-ink">
-            projects
+          <p className="font-mono text-xs text-ink-soft">
+            projects · {allProjects.length}
           </p>
-          <h1 className="mt-3 font-display text-3xl font-medium text-ink md:text-4xl">
+          <h1 className="mt-4 text-[clamp(2.5rem,7vw,6rem)] font-medium leading-[1.02] tracking-tight text-ink">
             Projects
           </h1>
         </FadeIn>
 
-        <div className="mt-6">
-          <CategoryTabs categories={CATEGORIES} />
+        <div className="mt-10">
+          <CategoryTabs
+            categories={categories}
+            totalCount={allProjects.length}
+          />
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div className="mt-12 grid grid-cols-1 gap-x-6 gap-y-14 md:grid-cols-2 xl:grid-cols-3">
           {projects.length === 0 && (
             <div className="col-span-full">
               <EmptyState message="Belum ada project di kategori ini." />
             </div>
           )}
           {projects.map((p, i) => (
-            <ProjectCard key={p.slug} project={p} delay={i * 0.05} />
+            <ProjectCard key={p.slug} project={p} delay={(i % 3) * 0.06} />
           ))}
         </div>
       </Container>

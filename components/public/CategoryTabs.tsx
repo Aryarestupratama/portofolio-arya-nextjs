@@ -1,40 +1,43 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
-// Design.md §4.3.1: segmented control — pill container (bg-clean-white)
-// dengan animated active indicator (layoutId) yang dapat background putih
-// + shadow saat aktif. Port langsung dari CategoryTabs.jsx (Laravel);
-// value/label tetap dynamic lewat props (bukan hardcoded) supaya kategori
-// bisa berubah tanpa redeploy. Update search params via next/navigation
-// menggantikan router.get() Inertia.
+type Category = { value: string; label: string; count?: number };
+
+// Filter kategori project: baris tombol kecil, tersinkron ke URL
+// (?category=...). Kategori dinamis lewat props.
 export function CategoryTabs({
   categories,
+  totalCount,
 }: {
-  categories: { value: string; label: string }[];
+  categories: Category[];
+  totalCount?: number;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const active = searchParams.get("category") ?? "";
-  const reduceMotion = useReducedMotion();
 
   function setCategory(value: string) {
     const params = new URLSearchParams(searchParams.toString());
     if (!value) params.delete("category");
     else params.set("category", value);
-    router.push(`/projects?${params.toString()}`, { scroll: false });
+    const qs = params.toString();
+    router.push(qs ? `/projects?${qs}` : "/projects", { scroll: false });
   }
 
-  const allTabs = [{ value: "", label: "Semua" }, ...categories];
+  const tabs: Category[] = [
+    { value: "", label: "All", count: totalCount },
+    ...categories,
+  ];
 
   return (
     <div
       role="group"
       aria-label="Filter kategori project"
-      className="flex w-fit gap-1 rounded-full border border-line bg-clean-white p-1 font-mono text-sm"
+      className="flex flex-wrap gap-2"
     >
-      {allTabs.map((tab) => {
+      {tabs.map((tab) => {
         const isActive = active === tab.value;
         return (
           <button
@@ -42,23 +45,24 @@ export function CategoryTabs({
             type="button"
             aria-pressed={isActive}
             onClick={() => setCategory(tab.value)}
-            className={`relative rounded-full px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt ${
-              isActive ? "" : "text-ink-soft hover:text-ink"
-            }`}
-            style={isActive ? { color: "var(--cobalt)" } : undefined}
-          >
-            {isActive && (
-              <motion.span
-                layoutId="category-tab-active"
-                className="absolute inset-0 rounded-full bg-white shadow-sm"
-                transition={
-                  reduceMotion
-                    ? { duration: 0 }
-                    : { type: "spring", stiffness: 380, damping: 30 }
-                }
-              />
+            className={cn(
+              "inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+              isActive
+                ? "border-ink bg-ink text-paper"
+                : "border-line text-ink-soft hover:border-ink hover:text-ink",
             )}
-            <span className="relative">{tab.label}</span>
+          >
+            {tab.label}
+            {tab.count !== undefined && (
+              <span
+                className={cn(
+                  "font-mono text-[10px]",
+                  isActive ? "text-paper/70" : "text-ink-soft",
+                )}
+              >
+                {tab.count}
+              </span>
+            )}
           </button>
         );
       })}
