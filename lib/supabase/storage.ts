@@ -7,6 +7,16 @@ const BUCKET = "project-images";
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 
+// Ekstensi ditentukan dari MIME type yang sudah lolos validasi, bukan dari
+// nama file buatan pengguna (mencegah mis. "x.html" tersimpan di bucket).
+const EXT_BY_TYPE: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "application/pdf": "pdf",
+};
+
 export function validateImageFile(file: File) {
   if (!ALLOWED_TYPES.includes(file.type)) {
     return "File harus berformat JPG, PNG, atau WebP.";
@@ -25,7 +35,7 @@ export async function uploadProjectImage(
   const error = validateImageFile(file);
   if (error) throw new Error(error);
 
-  const ext = file.name.split(".").pop();
+  const ext = EXT_BY_TYPE[file.type] ?? "bin";
   const filename = `${folder}/${crypto.randomUUID()}.${ext}`;
 
   const { data, error: uploadError } = await supabase.storage
@@ -73,7 +83,7 @@ export async function uploadCertificateFile(
   const error = validateCertificateFile(file);
   if (error) throw new Error(error);
 
-  const ext = file.name.split(".").pop();
+  const ext = EXT_BY_TYPE[file.type] ?? "bin";
   const filename = `${crypto.randomUUID()}.${ext}`;
 
   const { data, error: uploadError } = await supabase.storage

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { httpUrl } from "./url";
 
 // Rules.md §7: description idealnya 1–2 kalimat (tidak divalidasi ketat via
 // Zod, cukup dibatasi visual/UX di form + placeholder helper text).
@@ -16,8 +17,8 @@ export const projectSchema = z.object({
   problem: z.string().optional().or(z.literal("")),
   approach: z.string().optional().or(z.literal("")),
   outcome: z.string().optional().or(z.literal("")),
-  demo_url: z.string().url("URL tidak valid").optional().or(z.literal("")),
-  github_url: z.string().url("URL tidak valid").optional().or(z.literal("")),
+  demo_url: httpUrl("URL tidak valid (harus http/https)").optional().or(z.literal("")),
+  github_url: httpUrl("URL tidak valid (harus http/https)").optional().or(z.literal("")),
   is_featured: z.coerce.boolean().optional().default(false),
   status: z.enum(["live", "archived", "in_progress"], {
     message: "Status wajib dipilih",

@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { httpUrl } from "./url";
 
 export const recruitmentSchema = z.object({
   type: z.enum(["internship", "job"], { message: "Tipe wajib dipilih" }),
   company_name: z.string().min(1, "Nama perusahaan wajib diisi"),
   position: z.string().min(1, "Posisi wajib diisi"),
-  application_link: z.string().url("URL tidak valid").optional().or(z.literal("")),
+  application_link: httpUrl("URL tidak valid (harus http/https)").optional().or(z.literal("")),
   requirements: z.string().optional().or(z.literal("")),
   description: z.string().optional().or(z.literal("")),
   deadline_date: z.string().optional().or(z.literal("")),
