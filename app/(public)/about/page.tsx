@@ -13,7 +13,7 @@ export const revalidate = 3600;
 
 export const metadata = {
   title: "About",
-  description: "Cerita singkat tentang saya dan perjalanan sebagai developer.",
+  description: "A short story about me and my journey as a developer.",
 };
 
 export default async function AboutPage() {
@@ -48,7 +48,7 @@ export default async function AboutPage() {
             />
           ) : (
             <div className="lg:col-span-9">
-              <EmptyState message="Bio belum diisi." />
+              <EmptyState message="Bio not filled in yet." />
             </div>
           )}
 

@@ -22,9 +22,9 @@ export function BrowserFrame({
   className?: string;
   sizes?: string;
   priority?: boolean;
-  /** Mode detail: area tampil bisa di-scroll manual (cocok untuk screenshot full-page), tanpa auto-scroll. */
+  /** Mode detail: screenshot tampil setinggi aslinya, tanpa auto-scroll dan tanpa scroll bersarang (halaman yang di-scroll). */
   scrollable?: boolean;
-  /** Kelas aspect-ratio area tampil. */
+  /** Kelas aspect-ratio area tampil (hanya dipakai di mode card). */
   aspect?: string;
 }) {
   return (
@@ -48,9 +48,11 @@ export function BrowserFrame({
 
       <div
         className={cn(
-          "frame-viewport relative bg-surface",
-          aspect,
-          scrollable ? "overflow-y-auto overscroll-contain" : "overflow-hidden",
+          "relative bg-surface",
+          // Mode card: tinggi tetap + container query untuk auto-scroll.
+          // Mode detail: tinggi mengikuti gambar, TIDAK ada overflow
+          // sendiri, jadi wheel/touch selalu men-scroll halaman.
+          !scrollable && ["frame-viewport overflow-hidden", aspect],
         )}
       >
         {src ? (

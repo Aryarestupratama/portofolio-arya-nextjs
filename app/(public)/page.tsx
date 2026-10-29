@@ -141,7 +141,7 @@ export default async function HomePage() {
       {/* ---------- Selected work ---------- */}
       <SectionShell id="work" index="01" label="work">
         {featured.length === 0 ? (
-          <EmptyState message="Belum ada featured project." />
+          <EmptyState message="No featured projects yet." />
         ) : (
           <WorkRail title="Selected work">
             {featured.map((p, i) => (
@@ -170,7 +170,7 @@ export default async function HomePage() {
           Experience
         </h2>
         {experiences.length === 0 ? (
-          <EmptyState message="Belum ada experience ditambahkan." />
+          <EmptyState message="No experience added yet." />
         ) : (
           <ExperienceList experiences={experiences} limit={4} />
         )}
@@ -199,7 +199,7 @@ export default async function HomePage() {
                   {profile.about_bio}
                 </p>
               ) : (
-                <EmptyState message="Bio belum diisi." />
+                <EmptyState message="Bio not filled in yet." />
               )}
             </div>
             {aboutPhotoUrl && (
@@ -236,7 +236,7 @@ export default async function HomePage() {
               Skills
             </h2>
             {Object.keys(skillsByCategory).length === 0 ? (
-              <EmptyState message="Belum ada skill ditambahkan." />
+              <EmptyState message="No skills added yet." />
             ) : (
               <div className="space-y-6">
                 {Object.entries(skillsByCategory).map(([category, items]) => (

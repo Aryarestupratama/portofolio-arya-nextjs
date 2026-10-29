@@ -38,7 +38,7 @@ export function ProjectsView({
       <div className="mt-12 grid grid-cols-1 gap-x-6 gap-y-14 md:grid-cols-2 xl:grid-cols-3">
         {visible.length === 0 && (
           <div className="col-span-full">
-            <EmptyState message="Belum ada project di kategori ini." />
+            <EmptyState message="No projects in this category yet." />
           </div>
         )}
         {visible.map((p, i) => (

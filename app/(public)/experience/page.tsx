@@ -9,7 +9,7 @@ export const revalidate = 3600;
 
 export const metadata = {
   title: "Experience",
-  description: "Timeline pengalaman kerja dan organisasi.",
+  description: "A timeline of work and organization experience.",
 };
 
 export default async function ExperiencePage() {
@@ -30,7 +30,7 @@ export default async function ExperiencePage() {
 
         <div className="mt-14 max-w-4xl">
           {experiences.length === 0 ? (
-            <EmptyState message="Belum ada experience ditambahkan." />
+            <EmptyState message="No experience added yet." />
           ) : (
             <ExperienceList experiences={experiences} />
           )}

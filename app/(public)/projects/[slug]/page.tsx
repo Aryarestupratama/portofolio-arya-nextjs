@@ -114,7 +114,6 @@ export default async function ProjectDetailPage({
                   <BrowserFrame
                     scrollable
                     priority
-                    aspect="aspect-[16/10]"
                     src={thumbnailUrl}
                     alt={`${project.title} — screenshot`}
                     url={frameUrl}
@@ -128,8 +127,7 @@ export default async function ProjectDetailPage({
                     <figure>
                       <BrowserFrame
                         scrollable
-                        aspect="aspect-[16/10]"
-                        src={img.url}
+                            src={img.url}
                         alt={img.caption || `${project.title} — screenshot`}
                         url={frameUrl}
                         sizes="(min-width: 1024px) 66vw, 100vw"

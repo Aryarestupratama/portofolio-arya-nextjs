@@ -5,6 +5,7 @@ import { GithubIcon } from "./icons";
 import { StackChip } from "./StackChip";
 import { StatusBadge } from "./StatusBadge";
 import { CaseStudyAccordion } from "./CaseStudyAccordion";
+import { categoryLabel } from "@/lib/utils/category";
 
 type Metric = { id: number; value: string; label: string };
 
@@ -23,12 +24,6 @@ type SidebarProject = {
   outcome: string | null;
   demo_url: string | null;
   github_url: string | null;
-};
-
-const CATEGORY_LABEL: Record<string, string> = {
-  personal: "Personal",
-  kuliah: "Coursework",
-  client: "Client",
 };
 
 type CaseItem = { key: string; title: string; content: React.ReactNode };
@@ -95,7 +90,7 @@ export function ProjectSidebar({
   }
 
   return (
-    <div className="space-y-8 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
+    <div className="space-y-8 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:overscroll-auto lg:pr-1 lg:[scrollbar-width:thin]">
       <Link
         href="/#work"
         className="inline-flex items-center gap-1.5 rounded-sm font-mono text-xs text-ink-soft transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
@@ -106,7 +101,7 @@ export function ProjectSidebar({
       <div>
         <div className="flex items-center gap-3">
           <p className="font-mono text-xs text-ink-soft">
-            {CATEGORY_LABEL[project.category] ?? project.category}
+            {categoryLabel(project.category)}
             {project.tahun ? ` · ${project.tahun}` : ""}
           </p>
           <StatusBadge status={project.status} />

@@ -3,6 +3,7 @@ import { BrowserFrame } from "./BrowserFrame";
 import { StackChip } from "./StackChip";
 import { StatusBadge } from "./StatusBadge";
 import { FadeIn } from "./FadeIn";
+import { categoryLabel } from "@/lib/utils/category";
 
 export type ProjectCardData = {
   slug: string;
@@ -33,7 +34,7 @@ export function ProjectCard({
     <FadeIn delay={delay} className="h-full">
       <Link
         href={`/projects/${project.slug}`}
-        className="frame-host group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-4"
+        className="frame-host group flex h-full flex-col rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-4"
       >
         <BrowserFrame
           src={project.thumbnail_url}
@@ -43,21 +44,22 @@ export function ProjectCard({
         />
 
         <div className="mt-5 flex items-start justify-between gap-4">
-          <h3 className="text-lg font-medium tracking-tight text-ink transition-colors group-hover:text-brand md:text-xl">
+          {/* Tinggi judul dikunci 2 baris supaya semua card sejajar,
+              meskipun ada judul yang panjang. */}
+          <h3 className="line-clamp-2 min-h-[2lh] text-lg font-medium leading-snug tracking-tight text-ink transition-colors group-hover:text-brand md:text-xl">
             {project.title}
           </h3>
           <StatusBadge status={project.status} />
         </div>
 
         <p className="mt-1 font-mono text-xs text-ink-soft">
-          {project.category} · {project.tahun}
+          {categoryLabel(project.category).toLowerCase()} · {project.tahun}
         </p>
 
-        {project.description && (
-          <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-ink-soft">
-            {project.description}
-          </p>
-        )}
+        {/* Deskripsi selalu memakai tinggi 2 baris (walau teksnya 1 baris). */}
+        <p className="mt-3 line-clamp-2 min-h-[2lh] text-sm leading-relaxed text-ink-soft">
+          {project.description}
+        </p>
 
         {project.skillNames.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-1.5">
@@ -67,12 +69,17 @@ export function ProjectCard({
           </div>
         )}
 
+        {/* mt-auto: metric selalu menempel di dasar card. */}
         {project.metric && (
-          <div className="mt-5 flex items-baseline gap-3 border-t border-line pt-4">
-            <span className="font-mono text-2xl font-medium text-brand">
-              {project.metric.value}
-            </span>
-            <span className="text-xs text-ink-soft">{project.metric.label}</span>
+          <div className="mt-auto pt-5">
+            <div className="flex items-baseline gap-3 border-t border-line pt-4">
+              <span className="font-mono text-2xl font-medium text-brand">
+                {project.metric.value}
+              </span>
+              <span className="text-xs text-ink-soft">
+                {project.metric.label}
+              </span>
+            </div>
           </div>
         )}
       </Link>

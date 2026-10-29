@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { createStaticClient } from "@/lib/supabase/static";
 import { getAllPublicProjects } from "@/lib/supabase/queries/public";
 import { toProjectCardData } from "@/lib/utils/project-card";
+import { CATEGORY_LABEL } from "@/lib/utils/category";
 import { Container } from "@/components/public/Container";
 import { FadeIn } from "@/components/public/FadeIn";
 import {
@@ -13,14 +14,13 @@ export const revalidate = 3600;
 
 export const metadata = {
   title: "Projects",
-  description: "Kumpulan project & studi kasus.",
+  description: "A collection of projects and case studies.",
 };
 
-const CATEGORIES = [
-  { value: "personal", label: "Personal" },
-  { value: "kuliah", label: "Kuliah" },
-  { value: "client", label: "Client" },
-];
+const CATEGORIES = Object.entries(CATEGORY_LABEL).map(([value, label]) => ({
+  value,
+  label,
+}));
 
 export default async function ProjectsPage() {
   const supabase = createStaticClient();
