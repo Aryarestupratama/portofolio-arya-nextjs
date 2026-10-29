@@ -1,20 +1,26 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css"; // Path ini sudah benar karena sejajar di dalam folder app/
 
-const inter = Inter({
+// Variabel font sengaja memakai nama unik (--font-geist-*, --font-instrument-serif)
+// lalu dipetakan ke --font-sans / --font-display / --font-mono / --font-serif
+// di globals.css (@theme), supaya tidak terjadi referensi melingkar.
+const geistSans = Geist({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-geist-sans",
 });
 
-const fraunces = Fraunces({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-geist-mono",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+// Aksen editorial: dipakai maksimal satu kata di hero (class `font-serif italic`).
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-mono",
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
 });
 
 export const metadata: Metadata = {
@@ -30,7 +36,7 @@ export default function RootLayout({
   return (
     <html 
       lang="id" 
-      className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
     >
       <body className="antialiased font-sans" suppressHydrationWarning>
         {children}

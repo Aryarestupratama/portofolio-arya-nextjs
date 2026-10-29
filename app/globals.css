@@ -5,18 +5,26 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* --- CUSTOM BRAND TOKENS --- */
-  --color-cream: var(--cream);
-  --color-clean-white: var(--clean-white);
+  /* --- BRAND TOKENS (Design.md v2) --- */
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-wash: var(--brand-wash);
+
+  /* --- LEGACY ALIASES (dipakai komponen lama; hapus setelah semua dimigrasi) --- */
+  --color-cream: var(--cream);
+  --color-clean-white: var(--clean-white);
   --color-cobalt: var(--cobalt);
   --color-butter-cream: var(--butter-cream);
 
-  --font-display: var(--font-display);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  /* --- FONTS --- */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
 
   /* --- SHADCN TOKENS --- */
   --color-background: var(--background);
@@ -60,48 +68,54 @@
 }
 
 :root {
-  /* --- CUSTOM BRAND CSS VARIABLES (Dipertahankan untuk inline styles) --- */
-  --cream: #FFFFFF;
-  --clean-white: #DCEEFF;
-  --ink: #2F4860;
-  --ink-soft: #5C7690;
-  --line: #C7DCEE;
-  --cobalt: #7DA7D9;
-  --butter-cream: #FFF7CC;
+  /* --- BRAND CSS VARIABLES (Design.md v2) --- */
+  --paper: #FFFFFF;
+  --surface: #F6F6F8;
+  --ink: #0B0B0F;
+  --ink-soft: #6B6B75;
+  --line: #E7E7EC;
+  --brand: #27338C;      /* navy-periwinkle: satu-satunya aksen */
+  --brand-wash: #EEF0FF; /* tint dari brand, untuk latar chip/label/hover */
 
-  /* --- SHADCN CSS VARIABLES --- */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* --- LEGACY ALIASES (jangan dipakai di kode baru) --- */
+  --cream: var(--paper);
+  --clean-white: var(--surface);
+  --cobalt: var(--brand);
+  --butter-cream: var(--brand-wash);
+
+  /* --- SHADCN CSS VARIABLES (dipetakan ke token brand) --- */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper);
+  --card-foreground: var(--ink);
+  --popover: var(--paper);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--paper);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface);
+  --muted-foreground: var(--ink-soft);
+  --accent: var(--brand-wash);
+  --accent-foreground: var(--ink);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--brand);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: var(--paper);
+  --sidebar-accent: var(--brand-wash);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--brand);
 }
 
 .dark {
