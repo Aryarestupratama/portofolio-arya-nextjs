@@ -20,6 +20,7 @@ import { getRecruitmentEntries } from "@/lib/supabase/queries/recruitment";
 import { getProfile } from "@/lib/supabase/queries/profile";
 import { getPublicImageUrl } from "@/lib/supabase/storage";
 import { daysUntil, timeAgo } from "@/lib/utils/date";
+import { missingProfileFields } from "@/lib/utils/profile";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/page-header";
 import { Panel } from "@/components/admin/panel";
@@ -42,17 +43,6 @@ const PIPELINE = [
   { value: "accepted", label: "Accepted" },
   { value: "rejected", label: "Rejected" },
   { value: "no_response", label: "No response" },
-];
-
-// Field profile yang sebaiknya terisi supaya halaman publik terlihat lengkap.
-const PROFILE_FIELDS: { key: string; label: string }[] = [
-  { key: "tagline", label: "tagline" },
-  { key: "about_bio", label: "about bio" },
-  { key: "about_photo_url", label: "about photo" },
-  { key: "cv_url", label: "CV link" },
-  { key: "contact_email", label: "contact email" },
-  { key: "github_url", label: "GitHub" },
-  { key: "linkedin_url", label: "LinkedIn" },
 ];
 
 type Attention = { id: string; text: string; href: string };
@@ -128,9 +118,7 @@ export default async function DashboardPage() {
     });
   }
 
-  const missingProfile = PROFILE_FIELDS.filter(
-    (f) => !String(profile?.[f.key] ?? "").trim(),
-  ).map((f) => f.label);
+  const missingProfile = missingProfileFields(profile);
   if (missingProfile.length > 0) {
     attention.push({
       id: "profile",

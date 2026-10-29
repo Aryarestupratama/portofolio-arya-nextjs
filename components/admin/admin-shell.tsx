@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { Toaster } from "@/components/ui/sonner";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 
 /**
@@ -26,6 +27,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-paper font-sans lg:flex">
+      <Toaster />
       {/* Desktop */}
       <div className="sticky top-0 hidden h-screen lg:block">
         <AdminSidebar />

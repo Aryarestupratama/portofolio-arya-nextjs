@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { getSkills } from "@/lib/supabase/queries/skills";
+import { PageHeader } from "@/components/admin/page-header";
+import { FormSection } from "@/components/admin/form";
 import { ProjectForm } from "../project-form";
 import { createProjectAction } from "../actions";
 
 export const metadata = {
-  title: "Tambah Project",
+  title: "New project",
   robots: { index: false, follow: false },
 };
 
@@ -13,21 +15,23 @@ export default async function NewProjectPage() {
   const skills = await getSkills(supabase);
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <p className="font-mono text-xs text-ink-soft">admin</p>
-      <h1 className="font-display text-2xl font-medium text-ink">
-        Tambah Project
-      </h1>
-      <p className="mt-1 text-sm text-ink-soft">
-        Gallery gambar tambahan bisa diupload setelah project ini disimpan.
-      </p>
-      <div className="mt-6">
-        <ProjectForm
-          action={createProjectAction}
-          allSkills={skills}
-          submitLabel="Simpan & Lanjut ke Gallery"
-        />
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        back={{ href: "/admin/projects", label: "Projects" }}
+        title="New project"
+        description="Fill in the basics and upload a thumbnail. You can add gallery images right after saving."
+      />
+      <ProjectForm
+        action={createProjectAction}
+        allSkills={skills}
+        submitLabel="Save & continue"
+      >
+        <FormSection title="Gallery" description="Extra screenshots shown on the project page.">
+          <p className="text-sm text-ink-soft">
+            Save the project first, then you can upload gallery images here.
+          </p>
+        </FormSection>
+      </ProjectForm>
     </div>
   );
 }

@@ -1,25 +1,26 @@
+import { PageHeader } from "@/components/admin/page-header";
 import { RecruitmentForm } from "../recruitment-form";
 import { createRecruitmentAction } from "../actions";
 
 export const metadata = {
-  title: "Tambah Lamaran",
+  title: "New application",
   robots: { index: false, follow: false },
 };
 
 export default function NewRecruitmentPage() {
   return (
-    <div className="mx-auto max-w-2xl">
-      <p className="font-mono text-xs text-ink-soft">admin · private</p>
-      <h1 className="font-display text-2xl font-medium text-ink">
-        Tambah Lamaran
-      </h1>
-      <div className="mt-6">
-        <RecruitmentForm
-          action={createRecruitmentAction}
-          submitLabel="Simpan"
-          showChecklistInput
-        />
-      </div>
+    <div className="mx-auto max-w-3xl space-y-6">
+      <PageHeader
+        back={{ href: "/admin/recruitment", label: "Recruitment Tracker" }}
+        eyebrow="admin · private"
+        title="New application"
+        description="Track an internship or job you want to apply for."
+      />
+      <RecruitmentForm
+        action={createRecruitmentAction}
+        submitLabel="Save application"
+        showChecklistInput
+      />
     </div>
   );
 }
