@@ -72,7 +72,7 @@ export function ProfileForm({ defaultValues }: { defaultValues: ProfileRow }) {
         <Input id={name} {...register(name)} />
       )}
       {errors[name] && (
-        <p className="text-xs text-red-600">{errors[name]?.message}</p>
+        <p className="text-xs text-destructive">{errors[name]?.message}</p>
       )}
     </div>
   );

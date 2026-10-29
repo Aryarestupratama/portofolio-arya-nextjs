@@ -33,14 +33,14 @@ export async function GET(request: Request) {
           flexDirection: "column",
           justifyContent: "center",
           padding: "80px",
-          backgroundColor: "#F7F4EC", // cream
+          backgroundColor: "#FFFFFF", // paper
         }}
       >
         <div
           style={{
             fontSize: 20,
             fontFamily: "monospace",
-            color: "#8A8578", // ink-soft
+            color: "#6B6B75", // ink-soft
           }}
         >
           {project.category} · {project.tahun}
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
           style={{
             fontSize: 64,
             fontWeight: 600,
-            color: "#1C1B18", // ink
+            color: "#0B0B0F", // ink
             marginTop: 24,
             lineHeight: 1.1,
           }}
@@ -59,7 +59,7 @@ export async function GET(request: Request) {
         <div
           style={{
             fontSize: 26,
-            color: "#8A8578",
+            color: "#6B6B75",
             marginTop: 24,
             maxWidth: 900,
           }}

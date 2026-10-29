@@ -68,7 +68,7 @@ function CategoryField({
               setSelected(e.target.value);
             }
           }}
-          className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
+          className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
           {allCategories.length === 0 && (
             <option value="" disabled>
@@ -158,7 +158,7 @@ function SkillFormDialog({
           </div>
           <CategoryField allCategories={allCategories} defaultValue={skill?.category} />
           {state?.error && (
-            <p className="text-sm text-red-600" role="alert">
+            <p className="text-sm text-destructive" role="alert">
               {state.error}
             </p>
           )}
@@ -185,7 +185,7 @@ export function SkillsManager({ skills }: { skills: Skill[] }) {
 
       <div className="mt-4 overflow-hidden rounded-xl border border-line">
         <table className="w-full text-sm">
-          <thead className="bg-clean-white text-left text-ink-soft">
+          <thead className="bg-surface text-left text-ink-soft">
             <tr>
               <th className="px-4 py-2 font-medium">Nama</th>
               <th className="px-4 py-2 font-medium">Kategori</th>

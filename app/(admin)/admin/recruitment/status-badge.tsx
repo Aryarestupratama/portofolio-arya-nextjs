@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils";
 
 const STYLES: Record<string, string> = {
-  listed: "bg-clean-white text-ink-soft",
-  applied: "bg-[var(--butter-cream)] text-ink",
-  on_process: "bg-[var(--cobalt)] text-white",
-  accepted: "bg-green-600 text-white",
-  rejected: "bg-red-600 text-white",
+  listed: "bg-surface text-ink-soft",
+  applied: "bg-brand-wash text-ink",
+  on_process: "bg-brand text-paper",
+  accepted: "bg-green-600 text-paper",
+  rejected: "bg-destructive text-paper",
   no_response: "bg-ink-soft/20 text-ink-soft",
 };
 

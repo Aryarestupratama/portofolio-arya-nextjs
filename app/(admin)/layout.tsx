@@ -12,11 +12,11 @@ export default async function AdminLayout({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return <div className="min-h-screen bg-cream">{children}</div>;
+    return <div className="min-h-screen bg-paper">{children}</div>;
   }
 
   return (
-    <div className="flex min-h-screen bg-cream font-sans">
+    <div className="flex min-h-screen bg-paper font-sans">
       <AdminSidebar />
       
       {/* Area utama (Main) yang bisa di-scroll secara independen */}

@@ -14,12 +14,6 @@
   --color-brand: var(--brand);
   --color-brand-wash: var(--brand-wash);
 
-  /* --- LEGACY ALIASES (dipakai komponen lama; hapus setelah semua dimigrasi) --- */
-  --color-cream: var(--cream);
-  --color-clean-white: var(--clean-white);
-  --color-cobalt: var(--cobalt);
-  --color-butter-cream: var(--butter-cream);
-
   /* --- FONTS --- */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -76,12 +70,6 @@
   --line: #E7E7EC;
   --brand: #27338C;      /* navy-periwinkle: satu-satunya aksen */
   --brand-wash: #EEF0FF; /* tint dari brand, untuk latar chip/label/hover */
-
-  /* --- LEGACY ALIASES (jangan dipakai di kode baru) --- */
-  --cream: var(--paper);
-  --clean-white: var(--surface);
-  --cobalt: var(--brand);
-  --butter-cream: var(--brand-wash);
 
   /* --- SHADCN CSS VARIABLES (dipetakan ke token brand) --- */
   --background: var(--paper);

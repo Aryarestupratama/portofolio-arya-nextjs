@@ -31,9 +31,9 @@ export default function DashboardPage() {
           <Link
             key={item.href}
             href={item.href}
-            className="flex items-center gap-3 rounded-xl border border-line bg-white p-5 transition-colors hover:bg-clean-white/60"
+            className="flex items-center gap-3 rounded-xl border border-line bg-paper p-5 transition-colors hover:bg-surface/60"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-clean-white text-ink">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-ink">
               <item.icon size={18} strokeWidth={1.75} />
             </span>
             <span className="font-medium text-ink">{item.label}</span>

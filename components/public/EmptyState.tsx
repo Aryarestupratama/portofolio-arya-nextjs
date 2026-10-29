@@ -6,7 +6,7 @@ export function EmptyState({
   message: string;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-line bg-white px-6 py-16 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-line bg-paper px-6 py-16 text-center">
       {icon && <div className="text-ink-soft">{icon}</div>}
       <p className="text-sm text-ink-soft">{message}</p>
     </div>

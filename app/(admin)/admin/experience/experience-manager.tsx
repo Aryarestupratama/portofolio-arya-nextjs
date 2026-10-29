@@ -152,7 +152,7 @@ function ExperienceFormDialog({
             </p>
           </div>
           {state?.error && (
-            <p className="text-sm text-red-600" role="alert">
+            <p className="text-sm text-destructive" role="alert">
               {state.error}
             </p>
           )}
@@ -176,14 +176,14 @@ export function ExperienceManager({
 
       <div className="mt-4 space-y-3">
         {experiences.length === 0 && (
-          <p className="rounded-xl border border-line bg-white px-4 py-8 text-center text-ink-soft">
+          <p className="rounded-xl border border-line bg-paper px-4 py-8 text-center text-ink-soft">
             Belum ada experience.
           </p>
         )}
         {experiences.map((exp) => (
           <div
             key={exp.id}
-            className="rounded-xl border border-line bg-white p-4"
+            className="rounded-xl border border-line bg-paper p-4"
           >
             <div className="flex items-start justify-between gap-4">
               <div>

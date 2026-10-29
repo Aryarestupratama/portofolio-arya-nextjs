@@ -158,7 +158,7 @@ export function ProjectForm({
   return (
     <form action={formAction} className="space-y-8">
       {/* ---------- Info Dasar ---------- */}
-      <section className="space-y-4 rounded-xl border border-line bg-white p-5">
+      <section className="space-y-4 rounded-xl border border-line bg-paper p-5">
         <h2 className="font-display text-lg font-medium text-ink">
           Info Dasar
         </h2>
@@ -198,7 +198,7 @@ export function ProjectForm({
               id="category"
               name="category"
               defaultValue={defaults?.category ?? "personal"}
-              className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
+              className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
               <option value="personal">Personal</option>
               <option value="kuliah">Kuliah</option>
@@ -221,7 +221,7 @@ export function ProjectForm({
               id="status"
               name="status"
               defaultValue={defaults?.status ?? "in_progress"}
-              className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
+              className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
               <option value="live">Live</option>
               <option value="in_progress">In Progress</option>
@@ -286,7 +286,7 @@ export function ProjectForm({
       </section>
 
       {/* ---------- Case Study ---------- */}
-      <section className="space-y-4 rounded-xl border border-line bg-white p-5">
+      <section className="space-y-4 rounded-xl border border-line bg-paper p-5">
         <h2 className="font-display text-lg font-medium text-ink">
           Case Study
         </h2>
@@ -321,7 +321,7 @@ export function ProjectForm({
       </section>
 
       {/* ---------- Thumbnail ---------- */}
-      <section className="space-y-4 rounded-xl border border-line bg-white p-5">
+      <section className="space-y-4 rounded-xl border border-line bg-paper p-5">
         <h2 className="font-display text-lg font-medium text-ink">
           Thumbnail
         </h2>
@@ -344,7 +344,7 @@ export function ProjectForm({
             name="thumbnail"
             type="file"
             accept="image/jpeg,image/png,image/webp"
-            className="block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-clean-white file:px-3 file:py-2 file:text-sm file:text-ink"
+            className="block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-surface file:px-3 file:py-2 file:text-sm file:text-ink"
           />
           <p className="text-xs text-ink-soft">
             JPG/PNG/WebP, maksimal 5MB.
@@ -353,7 +353,7 @@ export function ProjectForm({
       </section>
 
       {/* ---------- Skills ---------- */}
-      <section className="space-y-4 rounded-xl border border-line bg-white p-5">
+      <section className="space-y-4 rounded-xl border border-line bg-paper p-5">
         <h2 className="font-display text-lg font-medium text-ink">Skills</h2>
         {Object.entries(skillsByCategory).map(([category, skills]) => (
           <div key={category}>
@@ -393,7 +393,7 @@ export function ProjectForm({
             + Tambah skill baru
           </Button>
         ) : (
-          <div className="space-y-3 rounded-lg border border-line bg-clean-white p-4">
+          <div className="space-y-3 rounded-lg border border-line bg-surface p-4">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="new_skill_name">Nama skill</Label>
@@ -418,7 +418,7 @@ export function ProjectForm({
                         setNewSkillCategory(e.target.value);
                       }
                     }}
-                    className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
+                    className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                   >
                     {existingCategories.length === 0 && (
                       <option value="" disabled>
@@ -459,7 +459,7 @@ export function ProjectForm({
             </div>
 
             {newSkillError && (
-              <p className="text-sm text-red-600" role="alert">
+              <p className="text-sm text-destructive" role="alert">
                 {newSkillError}
               </p>
             )}
@@ -500,7 +500,7 @@ export function ProjectForm({
       </section>
 
       {state?.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           {state.error}
         </p>
       )}

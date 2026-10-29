@@ -53,7 +53,7 @@ export function RecruitmentForm({
 
   return (
     <form action={formAction} className="space-y-6">
-      <section className="space-y-4 rounded-xl border border-line bg-white p-5">
+      <section className="space-y-4 rounded-xl border border-line bg-paper p-5">
         <h2 className="font-display text-lg font-medium text-ink">
           Info Lamaran
         </h2>
@@ -86,7 +86,7 @@ export function RecruitmentForm({
               id="type"
               name="type"
               defaultValue={defaults?.type ?? "internship"}
-              className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
+              className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
               <option value="internship">Internship</option>
               <option value="job">Job</option>
@@ -98,7 +98,7 @@ export function RecruitmentForm({
               id="status"
               name="status"
               defaultValue={defaults?.status ?? "listed"}
-              className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
+              className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
               <option value="listed">Listed</option>
               <option value="applied">Applied</option>
@@ -152,7 +152,7 @@ export function RecruitmentForm({
         </div>
       </section>
 
-      <section className="space-y-4 rounded-xl border border-line bg-white p-5">
+      <section className="space-y-4 rounded-xl border border-line bg-paper p-5">
         <h2 className="font-display text-lg font-medium text-ink">Detail</h2>
 
         <div className="space-y-1.5">
@@ -212,7 +212,7 @@ export function RecruitmentForm({
       </section>
 
       {state?.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           {state.error}
         </p>
       )}

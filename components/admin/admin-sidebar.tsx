@@ -48,7 +48,7 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col justify-between border-r border-line bg-white/50">
+    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col justify-between border-r border-line bg-surface">
       <div className="flex min-h-0 flex-1 flex-col p-6">
         <p className="mb-1 font-display text-lg font-medium text-ink">Arya Restu Pratama</p>
         <p className="mb-8 font-mono text-[11px] text-ink-soft">admin panel</p>
@@ -68,8 +68,8 @@ export function AdminSidebar() {
                       href={item.href}
                       className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                         active
-                          ? "bg-clean-white text-ink"
-                          : "text-ink-soft hover:bg-clean-white/60 hover:text-ink"
+                          ? "bg-surface text-ink"
+                          : "text-ink-soft hover:bg-surface/60 hover:text-ink"
                       }`}
                     >
                       <item.icon size={16} strokeWidth={1.75} className="shrink-0" />
@@ -89,7 +89,7 @@ export function AdminSidebar() {
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:bg-clean-white hover:text-ink"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:bg-surface hover:text-ink"
           >
             <ExternalLink size={16} strokeWidth={1.75} className="shrink-0" />
             View live site

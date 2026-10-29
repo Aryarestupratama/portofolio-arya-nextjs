@@ -124,7 +124,7 @@ function CertificateFormDialog({
                 href={certificate.certificate_display_url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-block font-mono text-xs text-[var(--cobalt)] hover:underline"
+                className="inline-block font-mono text-xs text-brand hover:underline"
               >
                 View current file
               </a>
@@ -135,7 +135,7 @@ function CertificateFormDialog({
             </p>
           </div>
           {state?.error && (
-            <p className="text-sm text-red-600" role="alert">
+            <p className="text-sm text-destructive" role="alert">
               {state.error}
             </p>
           )}
@@ -159,7 +159,7 @@ export function CertificatesManager({
 
       <div className="mt-4 overflow-hidden rounded-xl border border-line">
         <table className="w-full text-sm">
-          <thead className="bg-clean-white text-left text-ink-soft">
+          <thead className="bg-surface text-left text-ink-soft">
             <tr>
               <th className="px-4 py-2 font-medium">Title</th>
               <th className="px-4 py-2 font-medium">Issuer</th>

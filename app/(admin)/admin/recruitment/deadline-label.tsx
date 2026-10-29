@@ -35,7 +35,7 @@ export function DeadlineLabel({
       <span
         className={cn(
           "text-xs font-medium",
-          diff < 0 && "text-red-600",
+          diff < 0 && "text-destructive",
           diff >= 0 && diff <= 3 && "text-amber-600",
           diff > 3 && "text-ink",
         )}

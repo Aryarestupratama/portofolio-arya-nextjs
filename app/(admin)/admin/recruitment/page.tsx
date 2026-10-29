@@ -38,7 +38,7 @@ export default async function RecruitmentPage() {
 
       <div className="mt-6 overflow-hidden rounded-xl border border-line">
         <table className="w-full text-sm">
-          <thead className="bg-clean-white text-left text-ink-soft">
+          <thead className="bg-surface text-left text-ink-soft">
             <tr>
               <th className="px-4 py-2 font-medium">Perusahaan</th>
               <th className="px-4 py-2 font-medium">Posisi</th>
@@ -59,7 +59,7 @@ export default async function RecruitmentPage() {
             {entries.map((entry) => (
               <tr
                 key={entry.id}
-                className="border-t border-line align-top transition-colors hover:bg-clean-white/60"
+                className="border-t border-line align-top transition-colors hover:bg-surface/60"
               >
                 <td className="px-4 py-3 font-medium text-ink">
                   {entry.company_name}

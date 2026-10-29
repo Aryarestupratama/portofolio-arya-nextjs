@@ -21,7 +21,7 @@ export function ProjectImagesManager({
   const [isPending, startTransition] = useTransition();
 
   return (
-    <section className="space-y-4 rounded-xl border border-line bg-white p-5">
+    <section className="space-y-4 rounded-xl border border-line bg-paper p-5">
       <h2 className="font-display text-lg font-medium text-ink">
         Gallery Gambar
       </h2>
@@ -74,13 +74,13 @@ export function ProjectImagesManager({
           type="file"
           accept="image/jpeg,image/png,image/webp"
           required
-          className="block text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-clean-white file:px-3 file:py-2 file:text-sm file:text-ink"
+          className="block text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-surface file:px-3 file:py-2 file:text-sm file:text-ink"
         />
         <Button type="submit" disabled={isPending} variant="outline">
           {isPending ? "Mengupload..." : "Upload"}
         </Button>
       </form>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </section>
   );
 }

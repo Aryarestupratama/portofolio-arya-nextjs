@@ -25,7 +25,7 @@ export function ChecklistManager({
   const doneCount = checklist.filter((c) => c.done).length;
 
   return (
-    <section className="space-y-4 rounded-xl border border-line bg-white p-5">
+    <section className="space-y-4 rounded-xl border border-line bg-paper p-5">
       <div className="flex items-center justify-between">
         <h2 className="font-display text-lg font-medium text-ink">
           Checklist Dokumen
@@ -64,7 +64,7 @@ export function ChecklistManager({
               onClick={() =>
                 startTransition(() => removeChecklistItemAction(entryId, i))
               }
-              className="text-xs text-red-600 hover:underline"
+              className="text-xs text-destructive hover:underline"
             >
               Hapus
             </button>

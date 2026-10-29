@@ -36,14 +36,14 @@ export default async function ProjectsPage() {
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {projects.length === 0 && (
-          <p className="col-span-full rounded-xl border border-line bg-white px-4 py-8 text-center text-ink-soft">
+          <p className="col-span-full rounded-xl border border-line bg-paper px-4 py-8 text-center text-ink-soft">
             Belum ada project. Klik &ldquo;+ Tambah Project&rdquo; untuk mulai.
           </p>
         )}
         {projects.map((project) => (
           <div
             key={project.id}
-            className="flex flex-col overflow-hidden rounded-xl border border-line bg-white transition-colors hover:bg-clean-white/60"
+            className="flex flex-col overflow-hidden rounded-xl border border-line bg-paper transition-colors hover:bg-surface/60"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -56,7 +56,7 @@ export default async function ProjectsPage() {
                 <p className="font-mono text-xs text-ink-soft">
                   {project.category} · {project.tahun}
                 </p>
-                <span className="rounded-full bg-clean-white px-2 py-0.5 font-mono text-[10px] text-ink">
+                <span className="rounded-full bg-surface px-2 py-0.5 font-mono text-[10px] text-ink">
                   {STATUS_LABEL[project.status]}
                 </span>
               </div>
