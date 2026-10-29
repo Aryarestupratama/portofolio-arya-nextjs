@@ -5,6 +5,7 @@ import { Pencil, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { IconLinkButton } from "@/components/admin/icon-button";
+import { daysUntil } from "@/lib/utils/date";
 import { DeadlineLabel } from "./deadline-label";
 import { DeleteRecruitmentButton } from "./delete-button";
 import { RecruitmentStatusBadge } from "./status-badge";
@@ -29,14 +30,6 @@ const STATUS_OPTIONS = [
   { value: "rejected", label: "Rejected" },
   { value: "no_response", label: "No Response" },
 ];
-
-function daysUntil(dateStr: string) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const target = new Date(dateStr);
-  target.setHours(0, 0, 0, 0);
-  return Math.round((target.getTime() - today.getTime()) / 86400000);
-}
 
 function deadlineBucket(r: RecruitmentRow) {
   if (!r.deadline_date) return "none";

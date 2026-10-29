@@ -6,7 +6,11 @@ import { ExternalLink, Pencil, Plus, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { IconLinkButton } from "@/components/admin/icon-button";
-import { StatusPill, type PillTone } from "@/components/admin/status-pill";
+import {
+  PROJECT_STATUS,
+  ProjectStatusPill,
+  type ProjectStatus,
+} from "@/components/admin/project-status-pill";
 import { CATEGORY_LABEL, categoryLabel } from "@/lib/utils/category";
 import { DeleteProjectButton } from "./delete-project-button";
 
@@ -17,18 +21,9 @@ export type ProjectRow = {
   description: string;
   category: string;
   tahun: number;
-  status: "live" | "in_progress" | "archived";
+  status: ProjectStatus;
   is_featured: boolean;
   thumbnailUrl: string;
-};
-
-const STATUS: Record<
-  ProjectRow["status"],
-  { label: string; tone: PillTone; pulse?: boolean }
-> = {
-  live: { label: "Live", tone: "brand" },
-  in_progress: { label: "In progress", tone: "neutral", pulse: true },
-  archived: { label: "Archived", tone: "muted" },
 };
 
 export function ProjectsTable({ projects }: { projects: ProjectRow[] }) {
@@ -85,14 +80,7 @@ export function ProjectsTable({ projects }: { projects: ProjectRow[] }) {
       id: "status",
       header: "Status",
       sortValue: (p) => p.status,
-      cell: (p) => {
-        const s = STATUS[p.status];
-        return (
-          <StatusPill tone={s.tone} dot pulse={s.pulse}>
-            {s.label}
-          </StatusPill>
-        );
-      },
+      cell: (p) => <ProjectStatusPill status={p.status} />,
     },
     {
       id: "featured",
@@ -142,7 +130,7 @@ export function ProjectsTable({ projects }: { projects: ProjectRow[] }) {
           {
             id: "status",
             label: "Status",
-            options: Object.entries(STATUS).map(([value, s]) => ({ value, label: s.label })),
+            options: Object.entries(PROJECT_STATUS).map(([value, s]) => ({ value, label: s.label })),
             getValue: (p) => p.status,
           },
           {

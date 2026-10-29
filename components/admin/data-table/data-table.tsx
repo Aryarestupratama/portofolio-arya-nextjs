@@ -217,7 +217,7 @@ function DataTableInner<T>({
                 value={state.filters[f.id]}
                 options={f.options}
                 onChange={(v) => state.setFilter(f.id, v)}
-                className="min-w-36"
+                className="w-auto min-w-36"
               />
             ))}
             {activeFilterCount > 0 && (

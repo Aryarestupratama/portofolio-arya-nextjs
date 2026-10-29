@@ -1,7 +1,20 @@
-import { ChevronDown } from "lucide-react";
+"use client";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-/** Dropdown filter berbasis <select> native (ringan, aksesibel, mobile-friendly). */
+// Radix Select tidak mengizinkan value "" pada item, jadi opsi "semua"
+// memakai sentinel ini dan dipetakan kembali ke "" untuk pemanggil.
+const ALL = "__all__";
+
+/** Dropdown filter bergaya shadcn (Radix Select). */
 export function FilterSelect({
   label,
   value,
@@ -18,28 +31,22 @@ export function FilterSelect({
   className?: string;
 }) {
   return (
-    <div className={cn("relative", className)}>
-      <select
+    <Select value={value || ALL} onValueChange={(v) => onChange(v === ALL ? "" : v)}>
+      <SelectTrigger
         aria-label={label}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={cn(
-          "h-10 w-full appearance-none rounded-lg border bg-paper py-2 pl-3 pr-9 text-sm text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
-          value ? "border-brand/40 bg-brand-wash/50" : "border-line",
-        )}
+        className={cn(value && "border-brand/40 bg-brand-wash/50", className)}
       >
-        <option value="">{allLabel ?? `All ${label.toLowerCase()}`}</option>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={ALL}>{allLabel ?? `All ${label.toLowerCase()}`}</SelectItem>
+        <SelectSeparator />
         {options.map((o) => (
-          <option key={o.value} value={o.value}>
+          <SelectItem key={o.value} value={o.value}>
             {o.label}
-          </option>
+          </SelectItem>
         ))}
-      </select>
-      <ChevronDown
-        aria-hidden
-        size={14}
-        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft"
-      />
-    </div>
+      </SelectContent>
+    </Select>
   );
 }

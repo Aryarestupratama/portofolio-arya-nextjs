@@ -1,5 +1,12 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 /** Nomor halaman dengan elipsis: 1 … 4 5 [6] 7 8 … 20 */
@@ -42,21 +49,21 @@ export function TablePagination({
         <span className="font-mono text-xs">
           {from}–{to} of {total}
         </span>
-        <label className="flex items-center gap-2 text-xs">
+        <div className="flex items-center gap-2 text-xs">
           <span className="hidden sm:inline">Rows</span>
-          <select
-            aria-label="Rows per page"
-            value={size}
-            onChange={(e) => onSize(Number(e.target.value))}
-            className="h-8 rounded-md border border-line bg-paper px-2 text-xs text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-          >
-            {sizeOptions.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </label>
+          <Select value={String(size)} onValueChange={(v) => onSize(Number(v))}>
+            <SelectTrigger aria-label="Rows per page" className="h-8 w-[4.5rem] px-2 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {sizeOptions.map((s) => (
+                <SelectItem key={s} value={String(s)}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {pageCount > 1 && (
