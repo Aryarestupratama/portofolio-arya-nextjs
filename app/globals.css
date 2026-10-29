@@ -164,6 +164,12 @@
   }
   .frame-scroll {
     transition: transform 700ms ease-out;
+    /* Screenshot pendek tetap mengisi penuh area tampil (tidak ada ruang
+       kosong abu-abu di bawah). Screenshot panjang tetap setinggi aslinya
+       sehingga bisa auto-scroll saat hover. */
+    min-height: 100cqh;
+    object-fit: cover;
+    object-position: top center;
   }
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     .frame-host:hover .frame-scroll,

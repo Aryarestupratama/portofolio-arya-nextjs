@@ -39,6 +39,7 @@ export function ProjectCard({
           src={project.thumbnail_url}
           alt={`${project.title} — screenshot`}
           url={project.displayUrl}
+          aspect="aspect-[2/1]"
         />
 
         <div className="mt-5 flex items-start justify-between gap-4">
