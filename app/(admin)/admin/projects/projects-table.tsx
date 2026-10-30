@@ -12,7 +12,13 @@ import {
   type ProjectStatus,
 } from "@/components/admin/project-status-pill";
 import { CATEGORY_LABEL, categoryLabel } from "@/lib/utils/category";
+import { BulkDeleteButton, BulkSelect } from "@/components/admin/bulk-actions";
 import { DeleteProjectButton } from "./delete-project-button";
+import {
+  deleteProjectsAction,
+  setProjectsFeaturedAction,
+  setProjectsStatusAction,
+} from "./actions";
 
 export type ProjectRow = {
   id: number;
@@ -150,6 +156,51 @@ export function ProjectsTable({ projects }: { projects: ProjectRow[] }) {
             getValue: (p) => (p.is_featured ? "yes" : "no"),
           },
         ]}
+        bulkActions={({ rows, clear }) => (
+          <>
+            <BulkSelect
+              label="Set status…"
+              options={Object.entries(PROJECT_STATUS).map(([value, s]) => ({
+                value,
+                label: s.label,
+              }))}
+              onSelect={async (status) => {
+                await setProjectsStatusAction(rows.map((r) => r.id), status);
+                clear();
+              }}
+              successMessage={(status) =>
+                `${rows.length} ${rows.length === 1 ? "project" : "projects"} set to ${
+                  PROJECT_STATUS[status as keyof typeof PROJECT_STATUS]?.label ?? status
+                }`
+              }
+            />
+            <BulkSelect
+              label="Featured…"
+              options={[
+                { value: "yes", label: "Mark as featured" },
+                { value: "no", label: "Remove from featured" },
+              ]}
+              onSelect={async (value) => {
+                await setProjectsFeaturedAction(rows.map((r) => r.id), value === "yes");
+                clear();
+              }}
+              successMessage={(value) =>
+                value === "yes"
+                  ? `${rows.length} marked as featured`
+                  : `${rows.length} removed from featured`
+              }
+            />
+            <BulkDeleteButton
+              count={rows.length}
+              noun={rows.length === 1 ? "project" : "projects"}
+              warning="Their images, metrics and skill links are removed too."
+              onDelete={async () => {
+                await deleteProjectsAction(rows.map((r) => r.id));
+                clear();
+              }}
+            />
+          </>
+        )}
         toolbarActions={addButton}
         emptyTitle="No projects yet"
         emptyDescription="Create your first case study to show on the portfolio."

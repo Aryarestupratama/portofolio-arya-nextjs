@@ -7,7 +7,12 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { IconLinkButton } from "@/components/admin/icon-button";
 import { daysUntil } from "@/lib/utils/date";
 import { DeadlineLabel } from "./deadline-label";
+import { BulkDeleteButton, BulkSelect } from "@/components/admin/bulk-actions";
 import { DeleteRecruitmentButton } from "./delete-button";
+import {
+  deleteRecruitmentEntriesAction,
+  setRecruitmentStatusAction,
+} from "./actions";
 import { RecruitmentStatusBadge } from "./status-badge";
 
 export type RecruitmentRow = {
@@ -140,6 +145,31 @@ export function RecruitmentTable({ entries }: { entries: RecruitmentRow[] }) {
             getValue: deadlineBucket,
           },
         ]}
+        bulkActions={({ rows, clear }) => (
+          <>
+            <BulkSelect
+              label="Set status…"
+              options={STATUS_OPTIONS}
+              onSelect={async (status) => {
+                await setRecruitmentStatusAction(rows.map((r) => r.id), status);
+                clear();
+              }}
+              successMessage={(status) =>
+                `${rows.length} ${rows.length === 1 ? "application" : "applications"} set to ${
+                  STATUS_OPTIONS.find((o) => o.value === status)?.label ?? status
+                }`
+              }
+            />
+            <BulkDeleteButton
+              count={rows.length}
+              noun={rows.length === 1 ? "application" : "applications"}
+              onDelete={async () => {
+                await deleteRecruitmentEntriesAction(rows.map((r) => r.id));
+                clear();
+              }}
+            />
+          </>
+        )}
         toolbarActions={addButton}
         emptyTitle="No applications tracked yet"
         emptyDescription="Track internships and jobs you want to apply to. This page is private."

@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, ChevronsUpDown, Inbox, Search, SearchX, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { FilterSelect } from "./filter-select";
@@ -48,6 +49,12 @@ export type DataTableProps<T> = {
   emptyAction?: React.ReactNode;
   /** Kata benda untuk hitungan, mis. "skills". */
   noun?: string;
+  /**
+   * Jika diisi, tabel punya kolom checkbox dan bar aksi massal muncul saat ada
+   * baris terpilih. `rows` hanya berisi baris terpilih yang lolos filter aktif
+   * (baris terpilih yang tersembunyi filter tidak ikut terkena aksi).
+   */
+  bulkActions?: (ctx: { rows: T[]; clear: () => void }) => React.ReactNode;
 };
 
 const HIDE: Record<NonNullable<Column<unknown>["hideBelow"]>, string> = {
@@ -153,7 +160,9 @@ function DataTableInner<T>({
   emptyDescription,
   emptyAction,
   noun = "items",
+  bulkActions,
 }: DataTableProps<T>) {
+  const [selected, setSelected] = useState<Set<string | number>>(new Set());
   const state = useTableState({
     filterIds: filters.map((f) => f.id),
     defaultPageSize: pageSizeOptions[0],
@@ -199,6 +208,39 @@ function DataTableInner<T>({
 
   const isEmptyData = data.length === 0;
 
+  // ---- Selection ----
+  const selectable = !!bulkActions;
+  const selectedRows = selectable ? sorted.filter((r) => selected.has(rowKey(r))) : [];
+  const pageSelectedCount = rows.filter((r) => selected.has(rowKey(r))).length;
+  const pageAllSelected = rows.length > 0 && pageSelectedCount === rows.length;
+  const pagePartlySelected = pageSelectedCount > 0 && !pageAllSelected;
+  const allMatchingSelected = total > 0 && selectedRows.length === total;
+
+  function toggleRow(key: string | number) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+
+  function togglePage() {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (pageAllSelected) rows.forEach((r) => next.delete(rowKey(r)));
+      else rows.forEach((r) => next.add(rowKey(r)));
+      return next;
+    });
+  }
+
+  function selectAllMatching() {
+    setSelected(new Set(sorted.map((r) => rowKey(r))));
+  }
+
+  const clearSelection = () => setSelected(new Set());
+  const colCount = columns.length + (selectable ? 1 : 0);
+
   return (
     <div className="space-y-4">
       {!isEmptyData && (
@@ -243,10 +285,44 @@ function DataTableInner<T>({
           </div>
         ) : (
           <>
+            {selectable && selectedRows.length > 0 && (
+              <div
+                role="region"
+                aria-label="Bulk actions"
+                className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line bg-brand-wash/70 px-4 py-2.5 text-sm"
+              >
+                <span className="font-medium text-ink">
+                  {selectedRows.length} selected
+                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  {bulkActions({ rows: selectedRows, clear: clearSelection })}
+                </div>
+                <div className="ml-auto flex items-center gap-1">
+                  {!allMatchingSelected && total > rows.length && (
+                    <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-brand" onClick={selectAllMatching}>
+                      Select all {total}
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" onClick={clearSelection}>
+                    Clear selection
+                  </Button>
+                </div>
+              </div>
+            )}
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-surface text-left">
                   <tr>
+                    {selectable && (
+                      <th scope="col" className="w-10 px-4 py-2.5">
+                        <Checkbox
+                          aria-label="Select all rows on this page"
+                          checked={pageAllSelected ? true : pagePartlySelected ? "indeterminate" : false}
+                          onCheckedChange={togglePage}
+                          disabled={rows.length === 0}
+                        />
+                      </th>
+                    )}
                     {columns.map((col) => {
                       const sortable = !!col.sortValue;
                       const active = state.sortId === col.id;
@@ -288,7 +364,7 @@ function DataTableInner<T>({
                 <tbody>
                   {rows.length === 0 ? (
                     <tr>
-                      <td colSpan={columns.length}>
+                      <td colSpan={colCount}>
                         <div className="flex flex-col items-center px-6 py-14 text-center">
                           <span className="flex size-12 items-center justify-center rounded-full bg-surface text-ink-soft">
                             <SearchX size={22} strokeWidth={1.5} />
@@ -302,8 +378,27 @@ function DataTableInner<T>({
                       </td>
                     </tr>
                   ) : (
-                    rows.map((row) => (
-                      <tr key={rowKey(row)} className="border-t border-line align-middle transition-colors hover:bg-surface/60">
+                    rows.map((row) => {
+                      const key = rowKey(row);
+                      const isSelected = selected.has(key);
+                      return (
+                      <tr
+                        key={key}
+                        data-selected={isSelected || undefined}
+                        className={cn(
+                          "border-t border-line align-middle transition-colors hover:bg-surface/60",
+                          isSelected && "bg-brand-wash/40 hover:bg-brand-wash/60",
+                        )}
+                      >
+                        {selectable && (
+                          <td className="w-10 px-4 py-3">
+                            <Checkbox
+                              aria-label={`Select row ${key}`}
+                              checked={isSelected}
+                              onCheckedChange={() => toggleRow(key)}
+                            />
+                          </td>
+                        )}
                         {columns.map((col) => (
                           <td
                             key={col.id}
@@ -313,7 +408,8 @@ function DataTableInner<T>({
                           </td>
                         ))}
                       </tr>
-                    ))
+                      );
+                    })
                   )}
                 </tbody>
               </table>

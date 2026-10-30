@@ -9,8 +9,11 @@ import {
   insertRecruitmentEntry,
   updateRecruitmentEntry,
   deleteRecruitmentEntry,
+  deleteRecruitmentEntries,
+  setRecruitmentStatus,
   setChecklist,
 } from "@/lib/supabase/mutations/recruitment";
+import { parseIds } from "@/lib/validations/bulk";
 import { getRecruitmentEntryById } from "@/lib/supabase/queries/recruitment";
 
 export type RecruitmentActionState = { error?: string } | null;
@@ -131,4 +134,23 @@ export async function removeChecklistItemAction(
   const updated = checklist.filter((_, i) => i !== itemIndex);
   await setChecklist(supabase, entryId, updated);
   revalidatePath(`/admin/recruitment/${entryId}/edit`);
+}
+
+// ---------- Bulk ----------
+
+export async function deleteRecruitmentEntriesAction(ids: number[]) {
+  const safeIds = parseIds(ids);
+  const supabase = await createClient();
+  await deleteRecruitmentEntries(supabase, safeIds);
+  revalidatePath("/admin/recruitment");
+  revalidatePath("/admin/dashboard");
+}
+
+export async function setRecruitmentStatusAction(ids: number[], status: string) {
+  const safeIds = parseIds(ids);
+  const parsed = recruitmentSchema.shape.status.parse(status);
+  const supabase = await createClient();
+  await setRecruitmentStatus(supabase, safeIds, parsed);
+  revalidatePath("/admin/recruitment");
+  revalidatePath("/admin/dashboard");
 }

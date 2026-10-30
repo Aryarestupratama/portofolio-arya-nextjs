@@ -10,7 +10,11 @@ import {
   deleteProject,
   addProjectImage,
   deleteProjectImage,
+  deleteProjects,
+  setProjectsFeatured,
+  setProjectsStatus,
 } from "@/lib/supabase/mutations/projects";
+import { parseIds } from "@/lib/validations/bulk";
 import { uploadProjectImage } from "@/lib/supabase/storage";
 
 export type ProjectActionState = { error?: string } | null;
@@ -174,4 +178,31 @@ export async function deleteProjectImageAction(
   await deleteProjectImage(supabase, imageId);
   revalidatePath(`/admin/projects/${projectId}/edit`);
   revalidatePath(`/projects/${slug}`);
+}
+
+// ---------- Bulk ----------
+
+export async function deleteProjectsAction(ids: number[]) {
+  const safeIds = parseIds(ids);
+  const supabase = await createClient();
+  await deleteProjects(supabase, safeIds);
+  revalidatePublicProjectPaths();
+  revalidatePath("/admin/projects");
+}
+
+export async function setProjectsFeaturedAction(ids: number[], featured: boolean) {
+  const safeIds = parseIds(ids);
+  const supabase = await createClient();
+  await setProjectsFeatured(supabase, safeIds, featured === true);
+  revalidatePublicProjectPaths();
+  revalidatePath("/admin/projects");
+}
+
+export async function setProjectsStatusAction(ids: number[], status: string) {
+  const safeIds = parseIds(ids);
+  const parsed = projectSchema.shape.status.parse(status);
+  const supabase = await createClient();
+  await setProjectsStatus(supabase, safeIds, parsed);
+  revalidatePublicProjectPaths();
+  revalidatePath("/admin/projects");
 }

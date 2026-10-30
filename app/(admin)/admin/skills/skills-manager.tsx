@@ -6,7 +6,12 @@ import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { IconButton } from "@/components/admin/icon-button";
 import { StatusPill } from "@/components/admin/status-pill";
-import { deleteSkillAction } from "./actions";
+import { BulkDeleteButton, BulkSelect } from "@/components/admin/bulk-actions";
+import {
+  deleteSkillAction,
+  deleteSkillsAction,
+  setSkillsCategoryAction,
+} from "./actions";
 import { SkillFormDialog, type Skill } from "./skill-form-dialog";
 
 export function SkillsManager({ skills }: { skills: Skill[] }) {
@@ -88,6 +93,28 @@ export function SkillsManager({ skills }: { skills: Skill[] }) {
             getValue: (s) => s.category,
           },
         ]}
+        bulkActions={({ rows, clear }) => (
+          <>
+            <BulkSelect
+              label="Move to category…"
+              options={allCategories.map((c) => ({ value: c, label: c }))}
+              onSelect={async (category) => {
+                await setSkillsCategoryAction(rows.map((r) => r.id), category);
+                clear();
+              }}
+              successMessage={(c) => `${rows.length} skills moved to ${c}`}
+            />
+            <BulkDeleteButton
+              count={rows.length}
+              noun={rows.length === 1 ? "skill" : "skills"}
+              warning="Their links to projects are removed too."
+              onDelete={async () => {
+                await deleteSkillsAction(rows.map((r) => r.id));
+                clear();
+              }}
+            />
+          </>
+        )}
         toolbarActions={addButton}
         emptyTitle="No skills yet"
         emptyDescription="Add the tools and technologies you want to show on your portfolio."

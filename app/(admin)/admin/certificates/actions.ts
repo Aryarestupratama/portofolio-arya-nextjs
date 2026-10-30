@@ -11,7 +11,9 @@ import {
   insertCertificate,
   updateCertificate,
   deleteCertificate,
+  deleteCertificates,
 } from "@/lib/supabase/mutations/certificates";
+import { parseIds } from "@/lib/validations/bulk";
 import { getCertificates } from "@/lib/supabase/queries/certificates";
 
 export type CertificateActionState = { error?: string } | null;
@@ -95,5 +97,28 @@ export async function deleteCertificateAction(id: number) {
   }
 
   revalidatePath("/"); // certificates hanya tampil di Home
+  revalidatePath("/admin/certificates");
+}
+
+// ---------- Bulk ----------
+
+export async function deleteCertificatesAction(ids: number[]) {
+  const safeIds = parseIds(ids);
+  const supabase = await createClient();
+
+  // Ambil path file dulu sebelum row dihapus, supaya file di storage
+  // ikut terhapus (sama seperti hapus satuan).
+  const certificates = await getCertificates(supabase);
+  const targets = certificates.filter((c) => safeIds.includes(c.id));
+
+  await deleteCertificates(supabase, safeIds);
+
+  await Promise.all(
+    targets
+      .filter((c) => c.certificate_url)
+      .map((c) => deleteCertificateFile(supabase, c.certificate_url)),
+  );
+
+  revalidatePath("/");
   revalidatePath("/admin/certificates");
 }

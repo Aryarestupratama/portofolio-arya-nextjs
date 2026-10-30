@@ -7,7 +7,8 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { IconButton } from "@/components/admin/icon-button";
 import { StatusPill } from "@/components/admin/status-pill";
 import { formatExperiencePeriod } from "@/lib/validations/experiences";
-import { deleteExperienceAction } from "./actions";
+import { BulkDeleteButton } from "@/components/admin/bulk-actions";
+import { deleteExperienceAction, deleteExperiencesAction } from "./actions";
 import {
   ExperienceFormDialog,
   type Experience,
@@ -130,6 +131,16 @@ export function ExperienceManager({
             getValue: (e) => (e.year_end === null ? "ongoing" : "finished"),
           },
         ]}
+        bulkActions={({ rows, clear }) => (
+          <BulkDeleteButton
+            count={rows.length}
+            noun={rows.length === 1 ? "entry" : "entries"}
+            onDelete={async () => {
+              await deleteExperiencesAction(rows.map((r) => r.id));
+              clear();
+            }}
+          />
+        )}
         toolbarActions={addButton}
         emptyTitle="No experience yet"
         emptyDescription="Add your work, freelance, or organization experience."

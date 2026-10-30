@@ -169,3 +169,30 @@ export async function deleteProjectImage(supabase: SupabaseClient, id: number) {
   const { error } = await supabase.from("project_images").delete().eq("id", id);
   if (error) throw error;
 }
+
+export async function deleteProjects(supabase: SupabaseClient, ids: number[]) {
+  // project_metrics, project_images, project_skill ikut terhapus (on delete cascade)
+  const { error } = await supabase.from("projects").delete().in("id", ids);
+  if (error) throw error;
+}
+
+export async function setProjectsFeatured(
+  supabase: SupabaseClient,
+  ids: number[],
+  isFeatured: boolean,
+) {
+  const { error } = await supabase
+    .from("projects")
+    .update({ is_featured: isFeatured })
+    .in("id", ids);
+  if (error) throw error;
+}
+
+export async function setProjectsStatus(
+  supabase: SupabaseClient,
+  ids: number[],
+  status: "live" | "in_progress" | "archived",
+) {
+  const { error } = await supabase.from("projects").update({ status }).in("id", ids);
+  if (error) throw error;
+}

@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { IconButton, IconLinkButton } from "@/components/admin/icon-button";
-import { deleteCertificateAction } from "./actions";
+import { BulkDeleteButton } from "@/components/admin/bulk-actions";
+import { deleteCertificateAction, deleteCertificatesAction } from "./actions";
 import {
   CertificateFormDialog,
   type Certificate,
@@ -121,6 +122,17 @@ export function CertificatesManager({
             getValue: (c) => String(c.year_start),
           },
         ]}
+        bulkActions={({ rows, clear }) => (
+          <BulkDeleteButton
+            count={rows.length}
+            noun={rows.length === 1 ? "certificate" : "certificates"}
+            warning="Their uploaded files are removed too."
+            onDelete={async () => {
+              await deleteCertificatesAction(rows.map((r) => r.id));
+              clear();
+            }}
+          />
+        )}
         toolbarActions={addButton}
         emptyTitle="No certificates yet"
         emptyDescription="Upload a certificate to show it on your portfolio."

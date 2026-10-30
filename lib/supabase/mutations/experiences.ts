@@ -33,3 +33,8 @@ export async function deleteExperience(supabase: SupabaseClient, id: number) {
   const { error } = await supabase.from("experiences").delete().eq("id", id);
   if (error) throw error;
 }
+
+export async function deleteExperiences(supabase: SupabaseClient, ids: number[]) {
+  const { error } = await supabase.from("experiences").delete().in("id", ids);
+  if (error) throw error;
+}

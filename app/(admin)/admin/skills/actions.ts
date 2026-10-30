@@ -7,7 +7,10 @@ import {
   insertSkill,
   updateSkill,
   deleteSkill,
+  deleteSkills,
+  setSkillsCategory,
 } from "@/lib/supabase/mutations/skills";
+import { parseIds } from "@/lib/validations/bulk";
 
 export type SkillActionState = { error?: string } | null;
 
@@ -77,5 +80,24 @@ export async function deleteSkillAction(id: number) {
   const supabase = await createClient();
   await deleteSkill(supabase, id);
   revalidatePath("/", "layout"); // skills tampil di Home + chip project
+  revalidatePath("/admin/skills");
+}
+
+// ---------- Bulk ----------
+
+export async function deleteSkillsAction(ids: number[]) {
+  const safeIds = parseIds(ids);
+  const supabase = await createClient();
+  await deleteSkills(supabase, safeIds);
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/skills");
+}
+
+export async function setSkillsCategoryAction(ids: number[], category: string) {
+  const safeIds = parseIds(ids);
+  const parsed = skillSchema.shape.category.parse(category);
+  const supabase = await createClient();
+  await setSkillsCategory(supabase, safeIds, parsed);
+  revalidatePath("/", "layout");
   revalidatePath("/admin/skills");
 }

@@ -67,3 +67,23 @@ export async function setChecklist(
     .eq("id", id);
   if (error) throw error;
 }
+
+export async function deleteRecruitmentEntries(
+  supabase: SupabaseClient,
+  ids: number[],
+) {
+  const { error } = await supabase.from("recruitment_entries").delete().in("id", ids);
+  if (error) throw error;
+}
+
+export async function setRecruitmentStatus(
+  supabase: SupabaseClient,
+  ids: number[],
+  status: string,
+) {
+  const { error } = await supabase
+    .from("recruitment_entries")
+    .update({ status })
+    .in("id", ids);
+  if (error) throw error;
+}

@@ -7,7 +7,9 @@ import {
   insertExperience,
   updateExperience,
   deleteExperience,
+  deleteExperiences,
 } from "@/lib/supabase/mutations/experiences";
+import { parseIds } from "@/lib/validations/bulk";
 
 export type ExperienceActionState = { error?: string } | null;
 
@@ -54,6 +56,18 @@ export async function upsertExperienceAction(
 export async function deleteExperienceAction(id: number) {
   const supabase = await createClient();
   await deleteExperience(supabase, id);
+  revalidatePath("/experience");
+  revalidatePath("/about");
+  revalidatePath("/");
+  revalidatePath("/admin/experience");
+}
+
+// ---------- Bulk ----------
+
+export async function deleteExperiencesAction(ids: number[]) {
+  const safeIds = parseIds(ids);
+  const supabase = await createClient();
+  await deleteExperiences(supabase, safeIds);
   revalidatePath("/experience");
   revalidatePath("/about");
   revalidatePath("/");

@@ -24,3 +24,17 @@ export async function deleteSkill(supabase: SupabaseClient, id: number) {
   const { error } = await supabase.from("skills").delete().eq("id", id);
   if (error) throw error;
 }
+
+export async function deleteSkills(supabase: SupabaseClient, ids: number[]) {
+  const { error } = await supabase.from("skills").delete().in("id", ids);
+  if (error) throw error;
+}
+
+export async function setSkillsCategory(
+  supabase: SupabaseClient,
+  ids: number[],
+  category: string,
+) {
+  const { error } = await supabase.from("skills").update({ category }).in("id", ids);
+  if (error) throw error;
+}

@@ -32,3 +32,8 @@ export async function deleteCertificate(supabase: SupabaseClient, id: number) {
   const { error } = await supabase.from("certificates").delete().eq("id", id);
   if (error) throw error;
 }
+
+export async function deleteCertificates(supabase: SupabaseClient, ids: number[]) {
+  const { error } = await supabase.from("certificates").delete().in("id", ids);
+  if (error) throw error;
+}
