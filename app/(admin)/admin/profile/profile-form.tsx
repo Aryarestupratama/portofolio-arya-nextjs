@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, useWatch, type UseFormRegister, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import { toDirectImageUrl } from "@/lib/utils/gdrive";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Field, FormActionBar, FormSection } from "@/components/admin/form";
+import { useUnsavedChanges } from "@/components/admin/unsaved-changes";
 import { updateProfile } from "./actions";
 
 type ProfileRow = Record<string, string | number | null>;
@@ -85,16 +86,8 @@ export function ProfileForm({ defaultValues }: { defaultValues: ProfileRow }) {
     defaultValues: sanitizeDefaultValues(defaultValues),
   });
 
-  // Peringatan saat menutup tab dengan perubahan belum tersimpan.
-  useEffect(() => {
-    if (!isDirty) return;
-    const handler = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
-  }, [isDirty]);
+  // Peringatan saat pindah halaman / menutup tab dikelola UnsavedChangesProvider.
+  useUnsavedChanges(isDirty);
 
   async function onSubmit(values: ProfileFormValues) {
     setFormError(null);

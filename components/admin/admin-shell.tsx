@@ -2,20 +2,27 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { UnsavedChangesProvider } from "@/components/admin/unsaved-changes";
 
 /**
  * Kerangka admin: sidebar tetap di desktop (lg+), drawer + top bar di mobile.
  * Auth tetap dicek server-side di (admin)/layout.tsx; komponen ini hanya UI.
  */
 export function AdminShell({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  // Drawer terbuka hanya selama pathname sama dengan saat dibuka, jadi otomatis
+  // menutup setelah navigasi (juga navigasi yang tertunda dialog konfirmasi).
+  const [openPath, setOpenPath] = useState<string | null>(null);
+  const open = openPath === pathname;
+  const setOpen = (value: boolean) => setOpenPath(value ? pathname : null);
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenPath(null);
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -26,6 +33,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }, [open]);
 
   return (
+    <UnsavedChangesProvider>
     <div className="min-h-screen bg-paper font-sans lg:flex">
       <Toaster />
       {/* Desktop */}
@@ -60,7 +68,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             className="absolute inset-0 bg-ink/40"
           />
           <div className="relative h-full w-60 animate-in slide-in-from-left duration-200">
-            <AdminSidebar onNavigate={() => setOpen(false)} />
+            <AdminSidebar />
             <button
               type="button"
               aria-label="Close menu"
@@ -79,5 +87,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </div>
+    </UnsavedChangesProvider>
   );
 }

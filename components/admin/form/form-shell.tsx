@@ -1,10 +1,11 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useTransition } from "react";
+import { createContext, useContext, useState, useTransition } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useUnsavedChanges } from "@/components/admin/unsaved-changes";
 
 type ActionResult = { error?: string } | null;
 
@@ -77,7 +78,7 @@ export function FormActionBar({
  * Pembungkus <form> untuk form native (FormData + Server Action):
  * - submit lewat onSubmit (bukan `action=`) supaya React TIDAK mereset isian
  *   form ketika validasi server gagal;
- * - melacak perubahan (dirty) + peringatan saat menutup tab;
+ * - melacak perubahan (dirty) dan mendaftarkannya ke penjaga "unsaved changes";
  * - toast sukses/gagal dan bar aksi lengket.
  */
 export function FormShell({
@@ -101,15 +102,8 @@ export function FormShell({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (!dirty) return;
-    const handler = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
-  }, [dirty]);
+  // Peringatan saat pindah halaman / menutup tab dikelola UnsavedChangesProvider.
+  useUnsavedChanges(dirty);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
