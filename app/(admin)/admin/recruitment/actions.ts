@@ -43,7 +43,7 @@ export async function createRecruitmentAction(
 ): Promise<RecruitmentActionState> {
   const parsed = readFormData(formData);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Data tidak valid." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   const supabase = await createClient();
@@ -51,7 +51,7 @@ export async function createRecruitmentAction(
   try {
     await insertRecruitmentEntry(supabase, parsed.data);
   } catch {
-    return { error: "Gagal menyimpan data. Coba lagi." };
+    return { error: "Could not save the application. Please try again." };
   }
 
   revalidatePath("/admin/recruitment");
@@ -65,7 +65,7 @@ export async function updateRecruitmentAction(
 ): Promise<RecruitmentActionState> {
   const parsed = readFormData(formData);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Data tidak valid." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   const supabase = await createClient();
@@ -73,7 +73,7 @@ export async function updateRecruitmentAction(
   try {
     await updateRecruitmentEntry(supabase, id, parsed.data);
   } catch {
-    return { error: "Gagal menyimpan data. Coba lagi." };
+    return { error: "Could not save the application. Please try again." };
   }
 
   revalidatePath("/admin/recruitment");

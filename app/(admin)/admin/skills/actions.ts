@@ -27,7 +27,7 @@ export async function upsertSkillAction(
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Data tidak valid." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   const supabase = await createClient();
@@ -39,7 +39,7 @@ export async function upsertSkillAction(
       await insertSkill(supabase, parsed.data);
     }
   } catch {
-    return { error: "Gagal menyimpan skill. Coba lagi." };
+    return { error: "Could not save the skill. Please try again." };
   }
 
   // Skills tampil di halaman publik /skills dan dipakai di project card,
@@ -58,7 +58,7 @@ export async function createSkillFromProjectFormAction(
 ): Promise<CreateSkillState> {
   const parsed = skillSchema.safeParse({ name, category });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Data tidak valid." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   const supabase = await createClient();
@@ -69,7 +69,7 @@ export async function createSkillFromProjectFormAction(
     revalidatePath("/admin/skills");
     return { skill };
   } catch {
-    return { error: "Gagal menyimpan skill baru. Coba lagi." };
+    return { error: "Could not save the new skill. Please try again." };
   }
 }
 

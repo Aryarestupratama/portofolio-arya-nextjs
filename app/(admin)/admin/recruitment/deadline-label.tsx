@@ -24,7 +24,7 @@ export function DeadlineLabel({
   }
 
   const diff = daysUntil(date);
-  const formatted = new Date(date).toLocaleDateString("id-ID", {
+  const formatted = new Date(date).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -41,8 +41,9 @@ export function DeadlineLabel({
         )}
       >
         {formatted}
-        {diff < 0 && " (lewat)"}
-        {diff >= 0 && diff <= 3 && ` (${diff}h lagi)`}
+        {diff < 0 && " (overdue)"}
+        {diff === 0 && " (today)"}
+        {diff > 0 && diff <= 3 && ` (${diff}d left)`}
       </span>
       {note && <p className="text-[11px] text-ink-soft">{note}</p>}
     </div>

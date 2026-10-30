@@ -65,12 +65,12 @@ export async function createProjectAction(
 ): Promise<ProjectActionState> {
   const parsed = readProjectFormData(formData);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Data tidak valid." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   const thumbnailFile = formData.get("thumbnail");
   if (!(thumbnailFile instanceof File) || thumbnailFile.size === 0) {
-    return { error: "Thumbnail wajib diupload." };
+    return { error: "A thumbnail is required." };
   }
 
   const supabase = await createClient();
@@ -87,7 +87,7 @@ export async function createProjectAction(
     newId = await insertProject(supabase, parsed.data, thumbnailPath);
   } catch (e) {
     return {
-      error: extractErrorMessage(e, "Gagal menyimpan project."),
+      error: extractErrorMessage(e, "Could not save the project."),
     };
   }
 
@@ -104,7 +104,7 @@ export async function updateProjectAction(
 ): Promise<ProjectActionState> {
   const parsed = readProjectFormData(formData);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Data tidak valid." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   const supabase = await createClient();
@@ -122,7 +122,7 @@ export async function updateProjectAction(
     await updateProject(supabase, id, parsed.data, thumbnailPath);
   } catch (e) {
     return {
-      error: extractErrorMessage(e, "Gagal menyimpan project."),
+      error: extractErrorMessage(e, "Could not save the project."),
     };
   }
 
@@ -146,7 +146,7 @@ export async function addProjectImageAction(
 ) {
   const file = formData.get("image");
   if (!(file instanceof File) || file.size === 0) {
-    return { error: "Pilih file gambar terlebih dahulu." };
+    return { error: "Choose an image file first." };
   }
 
   const supabase = await createClient();
@@ -156,7 +156,7 @@ export async function addProjectImageAction(
     await addProjectImage(supabase, projectId, path);
   } catch (e) {
     return {
-      error: extractErrorMessage(e, "Gagal upload gambar."),
+      error: extractErrorMessage(e, "Could not upload the image."),
     };
   }
 

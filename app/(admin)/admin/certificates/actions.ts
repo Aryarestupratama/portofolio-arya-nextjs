@@ -38,7 +38,7 @@ export async function upsertCertificateAction(
       uploadedNewFile = true;
     } catch (err) {
       return {
-        error: err instanceof Error ? err.message : "Gagal upload file sertifikat.",
+        error: err instanceof Error ? err.message : "Could not upload the certificate file.",
       };
     }
   }
@@ -55,7 +55,7 @@ export async function upsertCertificateAction(
     // Kalau validasi gagal tapi kita sudah terlanjur upload file baru,
     // hapus lagi supaya tidak jadi orphan (record tidak jadi tersimpan).
     if (uploadedNewFile) await deleteCertificateFile(supabase, certificate_url);
-    return { error: parsed.error.issues[0]?.message ?? "Data tidak valid." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   try {
@@ -66,7 +66,7 @@ export async function upsertCertificateAction(
     }
   } catch {
     if (uploadedNewFile) await deleteCertificateFile(supabase, certificate_url);
-    return { error: "Gagal menyimpan sertifikat. Coba lagi." };
+    return { error: "Could not save the certificate. Please try again." };
   }
 
   // Row berhasil disimpan dengan file baru -> file lama sudah tidak

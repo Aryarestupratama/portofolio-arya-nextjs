@@ -29,7 +29,7 @@ export async function upsertExperienceAction(
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Data tidak valid." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   const supabase = await createClient();
@@ -41,7 +41,7 @@ export async function upsertExperienceAction(
       await insertExperience(supabase, parsed.data);
     }
   } catch {
-    return { error: "Gagal menyimpan experience. Coba lagi." };
+    return { error: "Could not save the experience. Please try again." };
   }
 
   revalidatePath("/experience");

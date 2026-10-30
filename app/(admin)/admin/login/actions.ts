@@ -18,7 +18,7 @@ export async function login(
   });
 
   if (!parsed.success) {
-    return { error: "Email atau password tidak valid." };
+    return { error: "Enter a valid email and password." };
   }
 
   const supabase = await createClient();
@@ -29,7 +29,7 @@ export async function login(
   });
 
   if (error) {
-    return { error: "Email atau password salah." };
+    return { error: "Incorrect email or password." };
   }
 
   redirect("/admin/dashboard");

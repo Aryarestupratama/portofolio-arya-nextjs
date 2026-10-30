@@ -10,7 +10,7 @@ export async function getProfile(supabase: SupabaseClient) {
     .single();
 
   if (error) {
-    throw new Error(`Gagal mengambil data profile: ${error.message}`);
+    throw new Error(`Failed to load profile: ${error.message}`);
   }
 
   return data;

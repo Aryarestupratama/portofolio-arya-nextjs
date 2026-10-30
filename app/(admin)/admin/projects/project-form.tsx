@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  CheckboxField,
   CountedTextarea,
   Field,
   FormSection,
@@ -11,10 +12,7 @@ import {
   FormShell,
   ImageField,
   RowsEditor,
-  useFormShell,
 } from "@/components/admin/form";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { CATEGORY_LABEL } from "@/lib/utils/category";
 import type { ProjectActionState } from "./actions";
 import { SkillPicker, type Skill } from "./skill-picker";
@@ -53,30 +51,6 @@ const serializeMetrics = (rows: string[][]) =>
     .filter(([l, v]) => l?.trim() || v?.trim())
     .map(([l, v]) => `${clean(l ?? "")}|${clean(v ?? "")}`)
     .join("\n");
-
-function FeaturedToggle({ defaultChecked }: { defaultChecked: boolean }) {
-  const { markDirty } = useFormShell();
-  const [on, setOn] = useState(defaultChecked);
-  return (
-    <div className="flex items-start gap-2.5">
-      <Checkbox
-        id="is_featured"
-        checked={on}
-        onCheckedChange={(v) => {
-          setOn(v === true);
-          markDirty();
-        }}
-        className="mt-0.5"
-      />
-      <div>
-        <Label htmlFor="is_featured">Featured on home</Label>
-        <p className="mt-1 text-xs text-ink-soft">Shown in “Selected work” on the home page.</p>
-      </div>
-      {/* Nilai ikut ter-submit lewat hidden input native (server cek === "on"). */}
-      <input type="hidden" name="is_featured" value={on ? "on" : ""} />
-    </div>
-  );
-}
 
 export function ProjectForm({
   action,
@@ -180,7 +154,13 @@ export function ProjectForm({
             <Field label="Status" htmlFor="status">
               <FormSelect id="status" name="status" defaultValue={defaults?.status ?? "in_progress"} options={STATUS_OPTIONS} />
             </Field>
-            <FeaturedToggle defaultChecked={defaults?.is_featured ?? false} />
+            <CheckboxField
+              id="is_featured"
+              name="is_featured"
+              label="Featured on home"
+              hint="Shown in “Selected work” on the home page."
+              defaultChecked={defaults?.is_featured ?? false}
+            />
           </FormSection>
 
           <FormSection compact title="Classification">

@@ -7,22 +7,12 @@ const BUCKET = "project-images";
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 
-// Ekstensi ditentukan dari MIME type yang sudah lolos validasi, bukan dari
-// nama file buatan pengguna (mencegah mis. "x.html" tersimpan di bucket).
-const EXT_BY_TYPE: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/jpg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "application/pdf": "pdf",
-};
-
 export function validateImageFile(file: File) {
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return "File harus berformat JPG, PNG, atau WebP.";
+    return "File must be a JPG, PNG, or WebP image.";
   }
   if (file.size > MAX_SIZE_BYTES) {
-    return "Ukuran file maksimal 5MB.";
+    return "File size must be 5MB or less.";
   }
   return null;
 }
@@ -35,7 +25,7 @@ export async function uploadProjectImage(
   const error = validateImageFile(file);
   if (error) throw new Error(error);
 
-  const ext = EXT_BY_TYPE[file.type] ?? "bin";
+  const ext = file.name.split(".").pop();
   const filename = `${folder}/${crypto.randomUUID()}.${ext}`;
 
   const { data, error: uploadError } = await supabase.storage
@@ -68,10 +58,10 @@ const MAX_CERT_SIZE_BYTES = 10 * 1024 * 1024;
 
 export function validateCertificateFile(file: File) {
   if (!ALLOWED_CERT_TYPES.includes(file.type)) {
-    return "File harus berformat PDF, JPG, PNG, atau WebP.";
+    return "File must be a PDF, JPG, PNG, or WebP.";
   }
   if (file.size > MAX_CERT_SIZE_BYTES) {
-    return "Ukuran file maksimal 10MB.";
+    return "File size must be 10MB or less.";
   }
   return null;
 }
@@ -83,7 +73,7 @@ export async function uploadCertificateFile(
   const error = validateCertificateFile(file);
   if (error) throw new Error(error);
 
-  const ext = EXT_BY_TYPE[file.type] ?? "bin";
+  const ext = file.name.split(".").pop();
   const filename = `${crypto.randomUUID()}.${ext}`;
 
   const { data, error: uploadError } = await supabase.storage
@@ -113,6 +103,6 @@ export async function deleteCertificateFile(
   if (!path) return;
   const { error } = await supabase.storage.from(CERT_BUCKET).remove([path]);
   if (error) {
-    console.error("Gagal hapus file certificate lama:", path, error.message);
+    console.error("Failed to delete old certificate file:", path, error.message);
   }
 }

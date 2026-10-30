@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Kalau query gagal, tetap kembalikan static routes daripada bikin
     // seluruh /sitemap.xml error 500 — mending sitemap parsial daripada
     // tidak ada sama sekali.
-    console.error("sitemap: gagal fetch projects", error.message);
+    console.error("sitemap: failed to fetch projects", error.message);
     return staticRoutes;
   }
 

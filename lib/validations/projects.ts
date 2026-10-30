@@ -1,27 +1,30 @@
 import { z } from "zod";
-import { httpUrl } from "./url";
 
 // Rules.md §7: description idealnya 1–2 kalimat (tidak divalidasi ketat via
 // Zod, cukup dibatasi visual/UX di form + placeholder helper text).
 export const projectSchema = z.object({
-  title: z.string().min(1, "Judul wajib diisi").max(150),
-  description: z.string().min(1, "Deskripsi wajib diisi"),
+  title: z.string().min(1, "Title is required").max(150, "Title must be 150 characters or fewer"),
+  description: z.string().min(1, "Description is required"),
   detail: z.string().optional().or(z.literal("")),
   category: z.enum(["personal", "kuliah", "client"], {
-    message: "Kategori wajib dipilih",
+    message: "Category is required",
   }),
-  tahun: z.coerce.number().int().min(1990).max(2100),
+  tahun: z.coerce
+    .number({ message: "Year is required" })
+    .int("Year must be a whole number")
+    .min(1990, "Year must be between 1990 and 2100")
+    .max(2100, "Year must be between 1990 and 2100"),
   role: z.string().optional().or(z.literal("")),
   timeline: z.string().optional().or(z.literal("")),
   client: z.string().optional().or(z.literal("")),
   problem: z.string().optional().or(z.literal("")),
   approach: z.string().optional().or(z.literal("")),
   outcome: z.string().optional().or(z.literal("")),
-  demo_url: httpUrl("URL tidak valid (harus http/https)").optional().or(z.literal("")),
-  github_url: httpUrl("URL tidak valid (harus http/https)").optional().or(z.literal("")),
+  demo_url: z.string().url("Enter a valid URL").optional().or(z.literal("")),
+  github_url: z.string().url("Enter a valid URL").optional().or(z.literal("")),
   is_featured: z.coerce.boolean().optional().default(false),
   status: z.enum(["live", "archived", "in_progress"], {
-    message: "Status wajib dipilih",
+    message: "Status is required",
   }),
   // Simplified input: satu baris satu metric, format "label|value".
   // Diparse jadi rows project_metrics di mutation layer.
