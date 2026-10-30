@@ -73,7 +73,6 @@ function PhotoPreview({ url }: { url?: string }) {
 }
 
 export function ProfileForm({ defaultValues }: { defaultValues: ProfileRow }) {
-  const [formError, setFormError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -90,7 +89,6 @@ export function ProfileForm({ defaultValues }: { defaultValues: ProfileRow }) {
   useUnsavedChanges(isDirty);
 
   async function onSubmit(values: ProfileFormValues) {
-    setFormError(null);
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => formData.set(key, value ?? ""));
 
@@ -110,7 +108,6 @@ export function ProfileForm({ defaultValues }: { defaultValues: ProfileRow }) {
       if (key !== "_form") setError(key as Name, { message });
     }
     const message = first ?? "Could not save the profile.";
-    setFormError(message);
     toast.error(message);
   }
 
@@ -172,7 +169,6 @@ export function ProfileForm({ defaultValues }: { defaultValues: ProfileRow }) {
         cancelLabel="Back"
         dirty={isDirty}
         pending={isSubmitting}
-        error={formError}
         disableWhenClean
       />
     </form>

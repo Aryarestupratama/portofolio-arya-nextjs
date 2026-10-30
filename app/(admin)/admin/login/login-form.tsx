@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 import { useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +25,11 @@ export function LoginForm() {
     login,
     null,
   );
+
+  // Kegagalan login dari server tampil sebagai notifikasi sonner.
+  useEffect(() => {
+    if (state?.error) toast.error(state.error);
+  }, [state]);
 
   // React Hook Form di sini HANYA dipakai untuk validasi inline saat blur
   // (UX cepat sebelum submit) — register() dipasang ke input biasa, tapi
@@ -66,12 +72,6 @@ export function LoginForm() {
           <p className="text-xs text-destructive">{errors.password.message}</p>
         )}
       </div>
-
-      {state?.error && (
-        <p className="text-sm text-destructive" role="alert">
-          {state.error}
-        </p>
-      )}
 
       <SubmitButton />
     </form>

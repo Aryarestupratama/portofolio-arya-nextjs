@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
+import { toast } from "sonner";
 import { validateImageFile } from "@/lib/supabase/storage";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +24,6 @@ export function ImageField({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const shown = preview ?? currentUrl ?? null;
 
   function clearSelection() {
@@ -37,11 +37,10 @@ export function ImageField({
     if (!file) return;
     const problem = validateImageFile(file);
     if (problem) {
-      setError(problem);
+      toast.error(problem);
       clearSelection();
       return;
     }
-    setError(null);
     if (preview) URL.revokeObjectURL(preview);
     setPreview(URL.createObjectURL(file));
   }
@@ -87,13 +86,7 @@ export function ImageField({
       >
         {shown ? "Replace image" : "Choose image"}
       </label>
-      {error ? (
-        <p className="text-xs text-destructive" role="alert">
-          {error}
-        </p>
-      ) : (
-        <p className="text-xs text-ink-soft">JPG, PNG or WebP, max 5MB.</p>
-      )}
+      <p className="text-xs text-ink-soft">JPG, PNG or WebP, max 5MB.</p>
     </div>
   );
 }

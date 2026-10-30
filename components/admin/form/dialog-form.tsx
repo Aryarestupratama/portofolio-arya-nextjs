@@ -40,30 +40,28 @@ export function FormDialog({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   function handleOpenChange(next: boolean) {
     if (pending) return; // jangan tutup di tengah proses simpan
     setOpen(next);
-    if (!next) setError(null);
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    setError(null);
     startTransition(async () => {
       try {
         const result = await action(null, formData);
         if (result?.error) {
-          setError(result.error);
+          // Dialog tetap terbuka supaya isian bisa diperbaiki.
+          toast.error(result.error);
           return;
         }
         toast.success(successMessage);
         setOpen(false);
       } catch {
-        setError("Something went wrong. Please try again.");
+        toast.error("Something went wrong. Please try again.");
       }
     });
   }
@@ -78,11 +76,6 @@ export function FormDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {children}
-          {error && (
-            <p role="alert" className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {error}
-            </p>
-          )}
           <DialogFooter className="gap-2 sm:gap-0">
             <Button type="button" variant="outline" disabled={pending} onClick={() => handleOpenChange(false)}>
               Cancel

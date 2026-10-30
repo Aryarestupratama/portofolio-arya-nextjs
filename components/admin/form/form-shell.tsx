@@ -28,7 +28,6 @@ export function FormActionBar({
   cancelLabel = "Cancel",
   dirty,
   pending,
-  error,
   disableWhenClean = false,
 }: {
   submitLabel: string;
@@ -36,12 +35,10 @@ export function FormActionBar({
   cancelLabel?: string;
   dirty: boolean;
   pending: boolean;
-  error?: string | null;
   disableWhenClean?: boolean;
 }) {
   let status: React.ReactNode = <span className="text-ink-soft">No changes yet</span>;
   if (pending) status = <span className="text-ink-soft">Saving…</span>;
-  else if (error) status = <span className="text-destructive">{error}</span>;
   else if (dirty)
     status = (
       <span className="inline-flex items-center gap-2 text-ink">
@@ -52,10 +49,7 @@ export function FormActionBar({
 
   return (
     <div
-      className={cn(
-        "sticky bottom-4 z-20 flex flex-col gap-3 rounded-xl border bg-paper/95 px-4 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-between",
-        error ? "border-destructive/40" : "border-line",
-      )}
+      className="sticky bottom-4 z-20 flex flex-col gap-3 rounded-xl border border-line bg-paper/95 px-4 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-between"
     >
       <p role="status" aria-live="polite" className="min-w-0 text-sm">
         {status}
@@ -99,7 +93,6 @@ export function FormShell({
   children: React.ReactNode;
 }) {
   const [dirty, setDirty] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   // Peringatan saat pindah halaman / menutup tab dikelola UnsavedChangesProvider.
@@ -108,12 +101,10 @@ export function FormShell({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    setError(null);
     startTransition(async () => {
       try {
         const result = await action(null, formData);
         if (result?.error) {
-          setError(result.error);
           toast.error(result.error);
         } else {
           setDirty(false);
@@ -123,9 +114,7 @@ export function FormShell({
         // redirect() di Server Action melempar error khusus — biarkan Next yang menangani.
         const digest = (err as { digest?: unknown } | null)?.digest;
         if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) throw err;
-        const message = "Something went wrong. Please try again.";
-        setError(message);
-        toast.error(message);
+        toast.error("Something went wrong. Please try again.");
       }
     });
   }
@@ -143,7 +132,6 @@ export function FormShell({
           cancelHref={cancelHref}
           dirty={dirty}
           pending={pending}
-          error={error}
           disableWhenClean={disableWhenClean}
         />
       </form>

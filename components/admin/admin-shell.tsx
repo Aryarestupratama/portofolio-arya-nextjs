@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { Toaster } from "@/components/ui/sonner";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { UnsavedChangesProvider } from "@/components/admin/unsaved-changes";
 
@@ -35,7 +34,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <UnsavedChangesProvider>
     <div className="min-h-screen bg-paper font-sans lg:flex">
-      <Toaster />
       {/* Desktop */}
       <div className="sticky top-0 hidden h-screen lg:block">
         <AdminSidebar />

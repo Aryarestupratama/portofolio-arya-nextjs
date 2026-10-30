@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Field, FormDialog } from "@/components/admin/form";
 import { validateCertificateFile } from "@/lib/supabase/storage";
@@ -17,13 +17,11 @@ export type Certificate = {
 };
 
 function FileInput({ hasExisting, currentUrl }: { hasExisting: boolean; currentUrl?: string }) {
-  const [error, setError] = useState<string | null>(null);
   return (
     <Field
       label="Certificate file"
       htmlFor="certificate_file"
       required={!hasExisting}
-      error={error ?? undefined}
       hint={
         <>
           PDF, JPG, PNG or WebP, max 10MB.
@@ -49,8 +47,10 @@ function FileInput({ hasExisting, currentUrl }: { hasExisting: boolean; currentU
         onChange={(e) => {
           const file = e.target.files?.[0];
           const problem = file ? validateCertificateFile(file) : null;
-          setError(problem);
-          if (problem) e.target.value = "";
+          if (problem) {
+            toast.error(problem);
+            e.target.value = "";
+          }
         }}
       />
     </Field>

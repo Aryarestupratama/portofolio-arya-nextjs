@@ -2,6 +2,7 @@
 
 import { useRef, useTransition } from "react";
 import { Plus, X } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -24,6 +25,17 @@ export function ChecklistManager({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
+
+  // Aksi checklist langsung tersimpan; gagal → notifikasi, bukan diam-diam.
+  function run(task: () => Promise<unknown>) {
+    startTransition(async () => {
+      try {
+        await task();
+      } catch {
+        toast.error("Could not update the checklist. Please try again.");
+      }
+    });
+  }
 
   const doneCount = checklist.filter((c) => c.done).length;
   const percent = checklist.length === 0 ? 0 : (doneCount / checklist.length) * 100;
@@ -56,7 +68,7 @@ export function ChecklistManager({
               id={`check-${i}`}
               checked={item.done}
               disabled={isPending}
-              onCheckedChange={() => startTransition(() => toggleChecklistItemAction(entryId, i))}
+              onCheckedChange={() => run(() => toggleChecklistItemAction(entryId, i))}
             />
             <label
               htmlFor={`check-${i}`}
@@ -68,7 +80,7 @@ export function ChecklistManager({
               type="button"
               disabled={isPending}
               aria-label={`Remove ${item.item}`}
-              onClick={() => startTransition(() => removeChecklistItemAction(entryId, i))}
+              onClick={() => run(() => removeChecklistItemAction(entryId, i))}
               className="rounded p-1 text-ink-soft opacity-100 transition hover:bg-destructive/10 hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
             >
               <X size={14} />
@@ -81,7 +93,7 @@ export function ChecklistManager({
         action={() => {
           const value = inputRef.current?.value ?? "";
           if (!value.trim()) return;
-          startTransition(async () => {
+          run(async () => {
             await addChecklistItemAction(entryId, value);
             if (inputRef.current) inputRef.current.value = "";
           });

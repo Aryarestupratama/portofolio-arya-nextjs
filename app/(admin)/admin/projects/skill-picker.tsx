@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Check, Plus, Search } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -40,7 +41,6 @@ export function SkillPicker({
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [newCategoryMode, setNewCategoryMode] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const skills = [...allSkills, ...created.filter((c) => !allSkills.some((s) => s.id === c.id))];
@@ -65,20 +65,18 @@ export function SkillPicker({
     setName("");
     setCategory("");
     setNewCategoryMode(false);
-    setError(null);
   }
 
   function createSkill() {
     const cat = (newCategoryMode ? category : category || categories[0] || "").trim();
     if (!name.trim() || !cat) {
-      setError("Name and category are required.");
+      toast.error("Name and category are required.");
       return;
     }
-    setError(null);
     startTransition(async () => {
       const result = await createSkillFromProjectFormAction(name.trim(), cat);
       if (!result || result.error || !result.skill) {
-        setError(result?.error ?? "Could not save the new skill.");
+        toast.error(result?.error ?? "Could not save the new skill.");
         return;
       }
       const skill = result.skill;
@@ -212,11 +210,6 @@ export function SkillPicker({
               </Select>
             )}
           </div>
-          {error && (
-            <p className="text-sm text-destructive" role="alert">
-              {error}
-            </p>
-          )}
           <div className="flex gap-2">
             <Button type="button" size="sm" disabled={pending} onClick={createSkill}>
               {pending ? "Saving…" : "Save skill"}
