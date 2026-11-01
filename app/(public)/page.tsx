@@ -3,6 +3,7 @@ import { createStaticClient } from "@/lib/supabase/static";
 import { getCertificateUrl } from "@/lib/supabase/storage";
 import { getProfile } from "@/lib/supabase/queries/profile";
 import { toDirectImageUrl } from "@/lib/utils/gdrive";
+import { getBioSummary } from "@/lib/utils/about-bio";
 import { toProjectCardData } from "@/lib/utils/project-card";
 import {
   getFeaturedProjects,
@@ -196,7 +197,7 @@ export default async function HomePage() {
               <h2 className="sr-only">About {profile.name}</h2>
               {profile.about_bio ? (
                 <p className="max-w-3xl whitespace-pre-line text-2xl leading-snug text-ink md:text-4xl">
-                  {profile.about_bio}
+                  {getBioSummary(profile.about_bio)}
                 </p>
               ) : (
                 <EmptyState message="Bio not filled in yet." />

@@ -131,7 +131,14 @@ export function ProfileForm({ defaultValues }: { defaultValues: ProfileRow }) {
       </FormSection>
 
       <FormSection title="About" description="Shown in the About section and used for the availability line.">
-        <RhfField name="about_bio" label="Bio" textarea rows={5} {...shared} />
+        <RhfField
+          name="about_bio"
+          label="Bio"
+          textarea
+          rows={14}
+          hint="Separate paragraphs with a blank line. Start a paragraph with [2025] to open a year chapter on the About page; the year rail follows it and the tag is not shown. The home page only shows the first paragraph."
+          {...shared}
+        />
         <div>
           <RhfField name="about_photo_url" label="Portrait link" hint="Google Drive share link (anyone with the link)." {...shared} />
           <PhotoPreview url={aboutPhoto} />

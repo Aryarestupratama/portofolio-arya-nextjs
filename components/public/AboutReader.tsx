@@ -1,33 +1,13 @@
 "use client";
 
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import {
   motion,
   useReducedMotion,
   useScroll,
   useTransform,
 } from "framer-motion";
-
-// Pecah bio menjadi blok baca. Utamakan paragraf (baris kosong); kalau
-// hanya ada 1-2 paragraf, pecah per ~2 kalimat supaya efeknya terasa.
-function toChunks(text: string): string[] {
-  const paragraphs = text
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-  if (paragraphs.length >= 3) return paragraphs;
-
-  const sentences = text
-    .replace(/\s+/g, " ")
-    .trim()
-    .split(/(?<=[.!?])\s+/)
-    .filter(Boolean);
-  const chunks: string[] = [];
-  for (let i = 0; i < sentences.length; i += 2) {
-    chunks.push(sentences.slice(i, i + 2).join(" "));
-  }
-  return chunks.length ? chunks : paragraphs;
-}
+import { parseAboutBio } from "@/lib/utils/about-bio";
 
 const paragraphClass =
   "py-5 text-2xl leading-snug text-ink md:text-3xl md:leading-snug";
@@ -53,17 +33,13 @@ function FadeParagraph({ text }: { text: string }) {
 // brand + tahun yang bergerak mengikuti progres scroll.
 function YearRail({
   progress,
-  minYear,
-  maxYear,
+  resolveYear,
 }: {
   progress: ReturnType<typeof useScroll>["scrollYProgress"];
-  minYear: number;
-  maxYear: number;
+  resolveYear: (progress: number) => number;
 }) {
   const top = useTransform(progress, [0, 1], ["0%", "100%"]);
-  const year = useTransform(progress, (v) =>
-    Math.round(minYear + Math.min(Math.max(v, 0), 1) * (maxYear - minYear)),
-  );
+  const year = useTransform(progress, (v) => resolveYear(v));
 
   return (
     <div className="sticky top-28 hidden h-[50vh] lg:block" aria-hidden="true">
@@ -95,36 +71,77 @@ export function AboutReader({
   className?: string;
 }) {
   const bodyRef = useRef<HTMLDivElement>(null);
+  const chunkRefs = useRef<(HTMLDivElement | null)[]>([]);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: bodyRef,
     offset: ["start center", "end center"],
   });
-  const chunks = toChunks(text);
-  const showRail = minYear !== null && minYear < maxYear && !reduceMotion;
+  const chunks = parseAboutBio(text);
+  const bioYears = chunks.flatMap((c) => (c.year === null ? [] : [c.year]));
+  const chaptered = bioYears.length > 0;
+  const showRail =
+    !reduceMotion &&
+    (chaptered
+      ? new Set(bioYears).size > 1
+      : minYear !== null && minYear < maxYear);
+
+  // Tahun di rail: kalau bio punya penanda [tahun], ikuti paragraf yang sedang
+  // berada di tengah layar; kalau tidak, interpolasi linear seperti sebelumnya.
+  const resolveYear = useCallback(
+    (v: number) => {
+      const progress = Math.min(Math.max(v, 0), 1);
+      const body = bodyRef.current;
+      if (chaptered && body) {
+        const y = progress * body.offsetHeight;
+        let active = 0;
+        chunkRefs.current.forEach((el, i) => {
+          if (el && el.offsetTop <= y) active = i;
+        });
+        return chunks[active]?.year ?? bioYears[0];
+      }
+      const from = minYear ?? maxYear;
+      return Math.round(from + progress * (maxYear - from));
+    },
+    // chunks diturunkan dari `text`; hitung ulang hanya saat bio berubah.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [text, chaptered, minYear, maxYear],
+  );
 
   return (
     <div className={className}>
       <div className="grid gap-10 lg:grid-cols-9">
         <div className="lg:col-span-3">
           {showRail && (
-            <YearRail
-              progress={scrollYProgress}
-              minYear={minYear}
-              maxYear={maxYear}
-            />
+            <YearRail progress={scrollYProgress} resolveYear={resolveYear} />
           )}
         </div>
-        <div ref={bodyRef} className="pb-[20vh] lg:col-span-6">
-          {chunks.map((chunk, i) =>
-            reduceMotion ? (
-              <p key={i} className={paragraphClass}>
-                {chunk}
-              </p>
-            ) : (
-              <FadeParagraph key={i} text={chunk} />
-            ),
-          )}
+        <div ref={bodyRef} className="relative pb-[20vh] lg:col-span-6">
+          {chunks.map((chunk, i) => {
+            // Label tahun inline saat rail tidak tampil (mobile / reduced motion).
+            const isNewYear = chunk.year !== null && chunk.year !== chunks[i - 1]?.year;
+            return (
+              <div
+                key={i}
+                ref={(el) => {
+                  chunkRefs.current[i] = el;
+                }}
+              >
+                {isNewYear && (
+                  <p
+                    className={`pt-8 font-mono text-sm text-brand ${showRail ? "lg:hidden" : ""}`}
+                  >
+                    {chunk.year}
+                  </p>
+                )}
+                {reduceMotion ? (
+                  <p className={paragraphClass}>{chunk.text}</p>
+                ) : (
+                  <FadeParagraph text={chunk.text} />
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
