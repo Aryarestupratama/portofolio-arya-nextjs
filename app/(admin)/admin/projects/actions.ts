@@ -55,10 +55,14 @@ function readProjectFormData(formData: FormData) {
 }
 
 function revalidatePublicProjectPaths(slug?: string) {
-  // "layout" = listing + semua detail (navigasi "next project" di tiap
-  // detail ikut berubah kalau ada project baru/dihapus).
-  revalidatePath("/projects", "layout");
-  revalidatePath("/");
+  // Next menandai cache halaman berdasarkan path FILE route, termasuk nama
+  // route group. Halaman listing bertag "/(public)/projects/...", bukan
+  // "/projects/...", jadi revalidatePath("/projects", "layout") yang dulu
+  // dipakai di sini tidak pernah mengenai apa pun: listing /projects tetap
+  // menampilkan thumbnail lama sampai revalidate 1 jam habis.
+  // "/" + "layout" mengenai semua halaman publik (home, listing, semua
+  // detail, termasuk navigasi "next project"). Murah untuk situs sekecil ini.
+  revalidatePath("/", "layout");
   revalidatePath("/sitemap.xml");
   if (slug) revalidatePath(`/projects/${slug}`);
 }
