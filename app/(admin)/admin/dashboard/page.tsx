@@ -113,7 +113,7 @@ export default async function DashboardPage() {
   if (projects.length > 0 && featuredCount === 0) {
     attention.push({
       id: "featured",
-      text: "No featured project, so the home page “Selected work” is empty",
+      text: "No featured project, so the home page “Selected projects” is empty",
       href: "/admin/projects?featured=no",
     });
   }

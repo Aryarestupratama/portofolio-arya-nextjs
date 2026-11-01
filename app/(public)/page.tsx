@@ -15,7 +15,7 @@ import { Container } from "@/components/public/Container";
 import { FadeIn } from "@/components/public/FadeIn";
 import { EmptyState } from "@/components/public/EmptyState";
 import { ProjectCard } from "@/components/public/ProjectCard";
-import { WorkRail } from "@/components/public/WorkRail";
+import { ProjectRail } from "@/components/public/ProjectRail";
 import { SectionShell } from "@/components/public/SectionShell";
 import { ExperienceList } from "@/components/public/ExperienceList";
 import { CertificateList } from "@/components/public/CertificateList";
@@ -95,8 +95,8 @@ export default async function HomePage() {
 
             <div className="mt-10 flex flex-wrap gap-3">
               <Button asChild size="lg">
-                <Link href="#work">
-                  View work
+                <Link href="#projects">
+                  View projects
                   <ArrowRight size={16} className="ml-2" />
                 </Link>
               </Button>
@@ -139,16 +139,16 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ---------- Selected work ---------- */}
-      <SectionShell id="work" index="01" label="work">
+      {/* ---------- Selected projects ---------- */}
+      <SectionShell id="projects" index="01" label="projects">
         {featured.length === 0 ? (
           <EmptyState message="No featured projects yet." />
         ) : (
-          <WorkRail title="Selected work">
+          <ProjectRail title="Selected projects">
             {featured.map((p, i) => (
               <ProjectCard key={p.slug} project={p} delay={i * 0.08} />
             ))}
-          </WorkRail>
+          </ProjectRail>
         )}
 
         <div className="mt-4">

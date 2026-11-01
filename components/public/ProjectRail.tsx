@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 // Pengganti ProjectCarousel 3D: rail horizontal scroll-snap. Tombol
 // prev/next hanya muncul kalau isinya memang melebihi lebar (>= 3 card
 // di desktop). Dengan 1-2 project, tampil sebagai baris biasa.
-export function WorkRail({
+export function ProjectRail({
   title,
   children,
 }: {

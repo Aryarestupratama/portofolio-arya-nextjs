@@ -158,7 +158,7 @@ export function ProjectForm({
               id="is_featured"
               name="is_featured"
               label="Featured on home"
-              hint="Shown in “Selected work” on the home page."
+              hint="Shown in “Selected projects” on the home page."
               defaultChecked={defaults?.is_featured ?? false}
             />
           </FormSection>

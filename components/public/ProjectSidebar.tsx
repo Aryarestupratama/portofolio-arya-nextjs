@@ -92,10 +92,10 @@ export function ProjectSidebar({
   return (
     <div className="space-y-8 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:overscroll-auto lg:pr-1 lg:[scrollbar-width:thin]">
       <Link
-        href="/#work"
+        href="/#projects"
         className="inline-flex items-center gap-1.5 rounded-sm font-mono text-xs text-ink-soft transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
       >
-        <ArrowLeft size={14} /> Back to work
+        <ArrowLeft size={14} /> Back to projects
       </Link>
 
       <div>
