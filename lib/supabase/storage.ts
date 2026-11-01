@@ -2,17 +2,22 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 const BUCKET = "project-images";
 
-// Rules.md §5: upload gambar divalidasi tipe (jpg/png/webp) & ukuran maks
-// 5MB sebelum dikirim ke Supabase Storage.
+// Rules.md §5: upload gambar divalidasi tipe (jpg/png/webp) & ukuran sebelum
+// dikirim ke Supabase Storage.
+//
+// Batas ukuran SENGAJA 3,5MB, bukan 5MB: file lewat Server Action yang
+// dibatasi 4MB (next.config.ts) dan 4,5MB oleh Vercel Functions. Di atas itu
+// request ditolak 413 sebelum kode ini jalan. Gambar besar dikecilkan di
+// browser lewat prepareImageForUpload (lib/utils/compress-image.ts).
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-const MAX_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_SIZE_BYTES = 3.5 * 1024 * 1024;
 
 export function validateImageFile(file: File) {
   if (!ALLOWED_TYPES.includes(file.type)) {
     return "File must be a JPG, PNG, or WebP image.";
   }
   if (file.size > MAX_SIZE_BYTES) {
-    return "File size must be 5MB or less.";
+    return "File size must be 3.5MB or less.";
   }
   return null;
 }
@@ -54,14 +59,15 @@ const ALLOWED_CERT_TYPES = [
   "image/png",
   "image/webp",
 ];
-const MAX_CERT_SIZE_BYTES = 10 * 1024 * 1024;
+// PDF tidak bisa dikompres di browser, jadi batasnya mengikuti batas Server Action.
+const MAX_CERT_SIZE_BYTES = 3.5 * 1024 * 1024;
 
 export function validateCertificateFile(file: File) {
   if (!ALLOWED_CERT_TYPES.includes(file.type)) {
     return "File must be a PDF, JPG, PNG, or WebP.";
   }
   if (file.size > MAX_CERT_SIZE_BYTES) {
-    return "File size must be 10MB or less.";
+    return "File size must be 3.5MB or less. Compress the file and try again.";
   }
   return null;
 }

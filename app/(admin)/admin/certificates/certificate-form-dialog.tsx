@@ -24,7 +24,7 @@ function FileInput({ hasExisting, currentUrl }: { hasExisting: boolean; currentU
       required={!hasExisting}
       hint={
         <>
-          PDF, JPG, PNG or WebP, max 10MB.
+          PDF, JPG, PNG or WebP, max 3.5MB.
           {hasExisting && currentUrl && (
             <>
               {" "}

@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
-import { validateImageFile } from "@/lib/supabase/storage";
+import { formatMB, prepareImageForUpload } from "@/lib/utils/compress-image";
 import { cn } from "@/lib/utils";
 
 /**
@@ -24,6 +24,7 @@ export function ImageField({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const shown = preview ?? currentUrl ?? null;
 
   function clearSelection() {
@@ -32,17 +33,28 @@ export function ImageField({
     if (inputRef.current) inputRef.current.value = "";
   }
 
-  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+  async function onChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const input = e.target;
+    const file = input.files?.[0];
     if (!file) return;
-    const problem = validateImageFile(file);
-    if (problem) {
-      toast.error(problem);
+    setBusy(true);
+    try {
+      // Gambar besar dikecilkan dulu agar tidak kena 413 dari server.
+      const ready = await prepareImageForUpload(file);
+      if (ready !== file) {
+        const dt = new DataTransfer();
+        dt.items.add(ready);
+        input.files = dt.files;
+        toast.success(`Image optimized: ${formatMB(file.size)} → ${formatMB(ready.size)}`);
+      }
+      if (preview) URL.revokeObjectURL(preview);
+      setPreview(URL.createObjectURL(ready));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not use this image.");
       clearSelection();
-      return;
+    } finally {
+      setBusy(false);
     }
-    if (preview) URL.revokeObjectURL(preview);
-    setPreview(URL.createObjectURL(file));
   }
 
   return (
@@ -84,9 +96,9 @@ export function ImageField({
           "flex h-9 w-full cursor-pointer items-center justify-center rounded-md border border-line text-xs font-medium text-ink transition-colors hover:border-ink peer-focus-visible:ring-2 peer-focus-visible:ring-brand",
         )}
       >
-        {shown ? "Replace image" : "Choose image"}
+        {busy ? "Optimizing…" : shown ? "Replace image" : "Choose image"}
       </label>
-      <p className="text-xs text-ink-soft">JPG, PNG or WebP, max 5MB.</p>
+      <p className="text-xs text-ink-soft">JPG, PNG or WebP. Large images are compressed automatically.</p>
     </div>
   );
 }

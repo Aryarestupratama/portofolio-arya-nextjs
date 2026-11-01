@@ -5,7 +5,7 @@ import { ImagePlus, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
 import { IconButton } from "@/components/admin/icon-button";
-import { validateImageFile } from "@/lib/supabase/storage";
+import { formatMB, prepareImageForUpload } from "@/lib/utils/compress-image";
 import { cn } from "@/lib/utils";
 import { addProjectImageAction, deleteProjectImageAction } from "./actions";
 
@@ -34,13 +34,19 @@ export function ProjectImagesManager({
     setUploading(true);
     let ok = 0;
     for (const file of list) {
-      const problem = validateImageFile(file);
-      if (problem) {
-        toast.error(`${file.name}: ${problem}`);
+      let ready: File;
+      try {
+        // Gambar besar dikecilkan dulu agar tidak kena 413 dari server.
+        ready = await prepareImageForUpload(file);
+      } catch (err) {
+        toast.error(`${file.name}: ${err instanceof Error ? err.message : "Could not use this image."}`);
         continue;
       }
+      if (ready !== file) {
+        toast.message(`${file.name} optimized: ${formatMB(file.size)} → ${formatMB(ready.size)}`);
+      }
       const fd = new FormData();
-      fd.set("image", file);
+      fd.set("image", ready);
       const result = await addProjectImageAction(projectId, slug, fd);
       if (result?.error) toast.error(`${file.name}: ${result.error}`);
       else ok++;
@@ -111,7 +117,7 @@ export function ProjectImagesManager({
             </button>
           )}
         </p>
-        <p className="text-xs text-ink-soft">JPG, PNG or WebP, max 5MB each. Full-page screenshots work best.</p>
+        <p className="text-xs text-ink-soft">JPG, PNG or WebP. Large images are compressed automatically. Full-page screenshots work best.</p>
         <input
           ref={inputRef}
           type="file"
